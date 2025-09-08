@@ -2,82 +2,151 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private CharacterController controller;
+    [Header("Referencias")]
+    [SerializeField] private Rigidbody rb;          // referencia al rigidbody
+    [SerializeField] private Transform model;         // transform del modelo (hijo del jugador)
+    [SerializeField] private Transform floor;           // transform para detectar suelo
+
+    [SerializeField] private LayerMask floorMask;       // capa del suelo
 
     [Header("Movimiento")]
-    //Velocidad
-    private Vector3 speed;
-    //velocidad de movimiento
-    [SerializeField] private float speedMovement;
-    //Velocidad de giro
-    private float turnSpeed;
-    //tiempo de giro
-    [SerializeField] private float turnTime;
+    [SerializeField] private float speedMovement = 5f;  // velocidad de movimiento
+    [SerializeField] private float turnTime = 1f;     // tiempo de giro
 
     [Header("Salto")]
-    //gravedad
-    [SerializeField] private float gravity;
-    //si esta en el suelo
-    private bool inFloor;
-    //fuerza de salto
-    [SerializeField] private float jumpForce;
-    //altura de salto
-    [SerializeField] private float jumpHeight;
-    //transform del suelo
-    [SerializeField] private Transform floor;
-    //distancia al suelo
-    [SerializeField] private float floorDistance;
-    //capa del suelo
-    [SerializeField] private LayerMask floorMask;
+    [SerializeField] private float jumpForce = 5f;      // fuerza de salto
+    [SerializeField] private bool doubleJumpUnlocked = false; // condición para habilitar doble salto
+    [SerializeField] private bool isJumping = true;        // detectar si el jugador esta saltando
+    [SerializeField] private bool canDoubleJump;    // si el jugador aún tiene el segundo salto disponible
+    [SerializeField] private float floorDistance = 0.1f;// radio de detección
+    [SerializeField] private bool jumpRequest;        // si el jugador ha solicitado un salto (input)
 
-    private Rigidbody rb;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [Header("Jetpack")]
+    [SerializeField] private bool jetpack;         // si el jugador tiene jetpack
+    [SerializeField] private bool jetpackActive;   // si el jetpack está activo
+    [SerializeField] private float jetpackTimer;    // fuerza del jetpack
+    [SerializeField] private float maxJetpackTime = 3f; // duración máxima del jetpack
+    [SerializeField] private float jetpackForce;   // fuerza del jetpack
+    [SerializeField] private bool inFloor;
+
+
     void Start()
     {
-        controller = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
+
+        model = transform.GetChild(0).gameObject.transform;
+
+        // Importante para que no se vuelque con físicas raras
+        rb.freezeRotation = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
         Walk();
+        JumpRequest();
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        //jump();
+        Jump();
     }
 
     private void Walk()
     {
-        float MoveX = Input.GetAxisRaw("Horizontal");
-        float MoveZ = Input.GetAxisRaw("Vertical");
+        float MovX = Input.GetAxisRaw("Horizontal");
+        float MovZ = Input.GetAxisRaw("Vertical");
 
-        Vector3 direction = new Vector3(MoveX, 0, MoveZ);
+        // dirección de input en coordenadas locales (right/forward del objeto)
+        Vector3 direction = (transform.right * MovX + transform.forward * MovZ).normalized;
 
-        if (direction != Vector3.zero)
+        if (direction.magnitude >= 0.1f)
         {
-            float rotationAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, rotationAngle, ref turnSpeed, turnTime);
+            // proyectamos la dirección en el plano tangente al planeta
+            Vector3 gravityUp = (transform.position - Planeta.planeta.transform.position).normalized;
+            Vector3 moveDirection = Vector3.ProjectOnPlane(direction, gravityUp).normalized;
 
-            Vector3 moveDirection = Quaternion.Euler(0f, rotationAngle, 0f) * Vector3.forward;
-            transform.rotation = Quaternion.Euler(0, angle, 0);
-            controller.Move(moveDirection.normalized * speedMovement * Time.deltaTime);
+            // rotación hacia la dirección de movimiento
+            Quaternion targetRot = Quaternion.LookRotation(moveDirection, gravityUp);
+            model.transform.rotation = Quaternion.Slerp(model.transform.rotation, targetRot, turnTime * 10f * Time.deltaTime);
+
+            // mover al jugador
+            rb.MovePosition(rb.position + moveDirection * speedMovement * Time.deltaTime);
         }
     }
 
-    private void jump()
+    private void JumpRequest()
     {
-        inFloor = Physics.CheckSphere(floor.position, floorDistance, floorMask);
-        if (inFloor && speed.y < 0)
+        // Reset al tocar el suelo
+        if (inFloor)
         {
-            speed.y = jumpForce;
+            isJumping = false;
+            canDoubleJump = doubleJumpUnlocked; // si está desbloqueado, lo recupera al caer
+            jetpackActive = false;
+            jetpackTimer = 0f;
         }
+        else
+        {
+            isJumping = true;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space) && inFloor)
         {
-            speed.y = Mathf.Sqrt(jumpHeight * jumpForce * gravity);
+            jumpRequest = true;
+            jetpackActive = false;
         }
-        speed.y += gravity * Time.deltaTime;
-        controller.Move(speed * Time.deltaTime);
+        else if (Input.GetKeyDown(KeyCode.Space) && !inFloor && canDoubleJump)
+        {
+            jumpRequest = true;
+            jetpackActive = false;
+        }
+        else if (Input.GetKeyDown(KeyCode.Space) && isJumping && !inFloor && jetpack)
+        {
+            jetpackActive = true;
+        }
+        else if (Input.GetKeyUp(KeyCode.Space) && isJumping && !inFloor && jetpack)
+        {
+            jetpackActive = false;
+        }
+    }
+
+    private void Jump()
+    {
+        // Detectar suelo
+        inFloor = Physics.CheckSphere(floor.position, floorDistance, floorMask);
+
+        // Calcular la dirección de la gravedad
+        Vector3 gravityUp = (transform.position - Planeta.planeta.transform.position).normalized;
+
+        // --- Primer salto ---
+        if (jumpRequest && inFloor)
+        {
+            rb.AddForce(gravityUp * jumpForce, ForceMode.Impulse);
+            jumpRequest = false;
+        }
+        // --- Segundo salto (en el aire) ---
+        else if (jumpRequest && !inFloor && canDoubleJump)
+        {
+            // Reiniciar la velocidad vertical antes de aplicar el impulso
+            Vector3 velocity = rb.linearVelocity;
+            float upVelocity = Vector3.Dot(velocity, gravityUp);
+            rb.linearVelocity = velocity - gravityUp * upVelocity;
+
+            rb.AddForce(gravityUp * jumpForce, ForceMode.Impulse);
+
+            canDoubleJump = false; // ya gastó el segundo salto
+            
+        }
+        // --- Jetpack ---
+        else if (jetpackActive && jetpackTimer < maxJetpackTime)
+        {
+            // Aplicar fuerza continua mientras se mantiene presionada
+            rb.AddForce(gravityUp * jetpackForce, ForceMode.Impulse);
+
+            jetpackTimer += Time.fixedDeltaTime;
+
+            // Limitar duración
+            if (jetpackTimer >= maxJetpackTime)
+                jetpackActive = false;
+        }
     }
 }

@@ -7,9 +7,9 @@ public class Planeta : MonoBehaviour
     [SerializeField] public static Planeta planeta;
     [SerializeField] private float gravity;
 
-    public List<CharacterController> objetos;
+    public List<Rigidbody> objetos = new List<Rigidbody>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         planeta = this;
     }
@@ -17,13 +17,13 @@ public class Planeta : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        foreach (CharacterController objeto in objetos)
+        foreach (Rigidbody objeto in objetos)
         {
             Vector3 dirGravity = (objeto.transform.position - transform.position).normalized;
             Vector3 localUp = objeto.transform.up;
-            objeto.Move(dirGravity * gravity * Time.fixedDeltaTime);
-            //Quaternion targetRotation = Quaternion.FromToRotation(dirGravity, localUp) * objeto.transform.rotation;
-            //objeto.transform.rotation = Quaternion.Slerp(objeto.transform.rotation, targetRotation, 50 * Time.fixedDeltaTime);
+            objeto.AddForce(dirGravity * gravity * Time.fixedDeltaTime);
+            Quaternion targetRotation = Quaternion.FromToRotation(localUp, dirGravity) * objeto.transform.rotation;
+            objeto.transform.rotation = Quaternion.Slerp(objeto.transform.rotation, targetRotation, 50 * Time.fixedDeltaTime);
         }
     }
 }

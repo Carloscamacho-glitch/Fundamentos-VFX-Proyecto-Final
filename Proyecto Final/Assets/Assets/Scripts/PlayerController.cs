@@ -6,12 +6,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody rb;          // referencia al rigidbody
     [SerializeField] private Transform model;         // transform del modelo (hijo del jugador)
     [SerializeField] private Transform floor;           // transform para detectar suelo
-
     [SerializeField] private LayerMask floorMask;       // capa del suelo
 
     [Header("Movimiento")]
     [SerializeField] private float speedMovement = 5f;  // velocidad de movimiento
     [SerializeField] private float turnTime = 1f;     // tiempo de giro
+    [SerializeField] private float runMultiplier = 3f;
+    [SerializeField] private float maxStamina;
+    [SerializeField] private float stamina;
+    [SerializeField] private float currentSpeed;
+    [SerializeField] private float staminaRecoveryRate = 1f;
+    [SerializeField] private bool canRun;
+    [SerializeField] private bool isRunnig;
 
     [Header("Salto")]
     [SerializeField] private float jumpForce = 5f;      // fuerza de salto
@@ -20,6 +26,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool canDoubleJump;    // si el jugador aún tiene el segundo salto disponible
     [SerializeField] private float floorDistance = 0.1f;// radio de detección
     [SerializeField] private bool jumpRequest;        // si el jugador ha solicitado un salto (input)
+    [SerializeField] private bool inFloor;         // si el jugador está en el suelo
 
     [Header("Jetpack")]
     [SerializeField] private bool jetpack;         // si el jugador tiene jetpack
@@ -27,8 +34,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jetpackTimer;    // fuerza del jetpack
     [SerializeField] private float maxJetpackTime = 3f; // duración máxima del jetpack
     [SerializeField] private float jetpackForce;   // fuerza del jetpack
-    [SerializeField] private bool inFloor;
-
 
     void Start()
     {
@@ -69,8 +74,37 @@ public class PlayerController : MonoBehaviour
             Quaternion targetRot = Quaternion.LookRotation(moveDirection, gravityUp);
             model.transform.rotation = Quaternion.Slerp(model.transform.rotation, targetRot, turnTime * 10f * Time.deltaTime);
 
+            currentSpeed = speedMovement;
+            if (Input.GetKey(KeyCode.LeftShift) && inFloor && 0f <= stamina && canRun)
+            {
+                isRunnig = true;
+
+                currentSpeed *= runMultiplier;
+
+                stamina -= Time.deltaTime;
+            }
+            else
+            {
+                isRunnig = false;
+
+                currentSpeed = speedMovement;
+            }
+
             // mover al jugador
-            rb.MovePosition(rb.position + moveDirection * speedMovement * Time.deltaTime);
+            rb.MovePosition(rb.position + moveDirection * currentSpeed * Time.deltaTime);
+        }
+
+        if (stamina <= maxStamina && !isRunnig)
+        {
+            stamina += staminaRecoveryRate * Time.deltaTime;
+            if (2f <= stamina)
+            {
+                canRun = true;
+            }
+            else
+            {
+                canRun = false;
+            }
         }
     }
 
@@ -80,7 +114,7 @@ public class PlayerController : MonoBehaviour
         if (inFloor)
         {
             isJumping = false;
-            canDoubleJump = doubleJumpUnlocked; // si está desbloqueado, lo recupera al caer
+            canDoubleJump = doubleJumpUnlocked;
             jetpackActive = false;
             jetpackTimer = 0f;
         }
@@ -89,6 +123,7 @@ public class PlayerController : MonoBehaviour
             isJumping = true;
         }
 
+        // Detectar input de salto y jetpack
         if (Input.GetKeyDown(KeyCode.Space) && inFloor)
         {
             jumpRequest = true;

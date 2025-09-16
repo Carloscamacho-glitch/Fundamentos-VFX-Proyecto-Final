@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform model;         // transform del modelo (hijo del jugador)
     [SerializeField] private Transform floor;           // transform para detectar suelo
     [SerializeField] private LayerMask floorMask;       // capa del suelo
+    [SerializeField] private Transform cameraTransform; // la cámara principal o Cinemachine FreeLook
 
     [Header("Movimiento")]
     [SerializeField] private float speedMovement = 5f;  // velocidad de movimiento
@@ -61,50 +62,45 @@ public class PlayerController : MonoBehaviour
         float MovX = Input.GetAxisRaw("Horizontal");
         float MovZ = Input.GetAxisRaw("Vertical");
 
-        // dirección de input en coordenadas locales (right/forward del objeto)
-        Vector3 direction = (transform.right * MovX + transform.forward * MovZ).normalized;
+        if (MovX == 0f && MovZ == 0f) return;
 
-        if (direction.magnitude >= 0.1f)
+        // --- Dirección de la cámara ---
+        Vector3 gravityUp = (transform.position - Planeta.planeta.transform.position).normalized;
+
+        // Forward de la cámara proyectado en el plano tangente al planeta
+        Vector3 camForward = Vector3.ProjectOnPlane(cameraTransform.forward, gravityUp).normalized;
+        Vector3 camRight = Vector3.ProjectOnPlane(cameraTransform.right, gravityUp).normalized;
+
+        // Dirección de movimiento en función de la cámara
+        Vector3 direction = (camRight * MovX + camForward * MovZ).normalized;
+
+        // Rotación del modelo hacia la dirección de movimiento
+        Quaternion targetRot = Quaternion.LookRotation(direction, gravityUp);
+        model.transform.rotation = Quaternion.Slerp(model.transform.rotation, targetRot, turnTime * 10f * Time.deltaTime);
+
+        currentSpeed = speedMovement;
+
+        // Sprint
+        if (Input.GetKey(KeyCode.LeftShift) && inFloor && canRun)
         {
-            // proyectamos la dirección en el plano tangente al planeta
-            Vector3 gravityUp = (transform.position - Planeta.planeta.transform.position).normalized;
-            Vector3 moveDirection = Vector3.ProjectOnPlane(direction, gravityUp).normalized;
-
-            // rotación hacia la dirección de movimiento
-            Quaternion targetRot = Quaternion.LookRotation(moveDirection, gravityUp);
-            model.transform.rotation = Quaternion.Slerp(model.transform.rotation, targetRot, turnTime * 10f * Time.deltaTime);
-
+            isRunnig = true;
+            currentSpeed *= runMultiplier;
+            stamina -= Time.deltaTime;
+        }
+        else
+        {
+            isRunnig = false;
             currentSpeed = speedMovement;
-            if (Input.GetKey(KeyCode.LeftShift) && inFloor && 0f <= stamina && canRun)
-            {
-                isRunnig = true;
-
-                currentSpeed *= runMultiplier;
-
-                stamina -= Time.deltaTime;
-            }
-            else
-            {
-                isRunnig = false;
-
-                currentSpeed = speedMovement;
-            }
-
-            // mover al jugador
-            rb.MovePosition(rb.position + moveDirection * currentSpeed * Time.deltaTime);
         }
 
-        if (stamina <= maxStamina && !isRunnig)
+        // Mover al jugador
+        rb.MovePosition(rb.position + direction * currentSpeed * Time.deltaTime);
+
+        // Recuperar stamina si no corre
+        if (!isRunnig && stamina < maxStamina)
         {
             stamina += staminaRecoveryRate * Time.deltaTime;
-            if (2f <= stamina)
-            {
-                canRun = true;
-            }
-            else
-            {
-                canRun = false;
-            }
+            canRun = stamina >= 2f;
         }
     }
 
@@ -152,13 +148,13 @@ public class PlayerController : MonoBehaviour
         // Calcular la dirección de la gravedad
         Vector3 gravityUp = (transform.position - Planeta.planeta.transform.position).normalized;
 
-        // --- Primer salto ---
+        // Primer salto
         if (jumpRequest && inFloor)
         {
             rb.AddForce(gravityUp * jumpForce, ForceMode.Impulse);
             jumpRequest = false;
         }
-        // --- Segundo salto (en el aire) ---
+        // Segundo salto (en el aire)
         else if (jumpRequest && !inFloor && canDoubleJump)
         {
             // Reiniciar la velocidad vertical antes de aplicar el impulso
@@ -171,7 +167,7 @@ public class PlayerController : MonoBehaviour
             canDoubleJump = false; // ya gastó el segundo salto
             
         }
-        // --- Jetpack ---
+        // Jetpack
         else if (jetpackActive && jetpackTimer < maxJetpackTime)
         {
             // Aplicar fuerza continua mientras se mantiene presionada
@@ -179,7 +175,7 @@ public class PlayerController : MonoBehaviour
 
             jetpackTimer += Time.fixedDeltaTime;
 
-            // Limitar duración
+            // Limitar duración del jetpack
             if (jetpackTimer >= maxJetpackTime)
                 jetpackActive = false;
         }

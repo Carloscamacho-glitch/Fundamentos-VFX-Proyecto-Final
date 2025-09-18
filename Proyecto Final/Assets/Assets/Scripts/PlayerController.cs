@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxJetpackTime = 3f; // duración máxima del jetpack
     [SerializeField] private float jetpackForce;   // fuerza del jetpack
 
+    public Transform respawnPoint;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -62,39 +64,40 @@ public class PlayerController : MonoBehaviour
         float MovX = Input.GetAxisRaw("Horizontal");
         float MovZ = Input.GetAxisRaw("Vertical");
 
-        if (MovX == 0f && MovZ == 0f) return;
-
-        // --- Dirección de la cámara ---
-        Vector3 gravityUp = (transform.position - Planeta.planeta.transform.position).normalized;
-
-        // Forward de la cámara proyectado en el plano tangente al planeta
-        Vector3 camForward = Vector3.ProjectOnPlane(cameraTransform.forward, gravityUp).normalized;
-        Vector3 camRight = Vector3.ProjectOnPlane(cameraTransform.right, gravityUp).normalized;
-
-        // Dirección de movimiento en función de la cámara
-        Vector3 direction = (camRight * MovX + camForward * MovZ).normalized;
-
-        // Rotación del modelo hacia la dirección de movimiento
-        Quaternion targetRot = Quaternion.LookRotation(direction, gravityUp);
-        model.transform.rotation = Quaternion.Slerp(model.transform.rotation, targetRot, turnTime * 10f * Time.deltaTime);
-
-        currentSpeed = speedMovement;
-
-        // Sprint
-        if (Input.GetKey(KeyCode.LeftShift) && inFloor && canRun)
+        if (MovX != 0f || MovZ != 0f)
         {
-            isRunnig = true;
-            currentSpeed *= runMultiplier;
-            stamina -= Time.deltaTime;
-        }
-        else
-        {
-            isRunnig = false;
+            // --- Dirección de la cámara ---
+            Vector3 gravityUp = (transform.position - Planeta.planeta.transform.position).normalized;
+
+            // Forward de la cámara proyectado en el plano tangente al planeta
+            Vector3 camForward = Vector3.ProjectOnPlane(cameraTransform.forward, gravityUp).normalized;
+            Vector3 camRight = Vector3.ProjectOnPlane(cameraTransform.right, gravityUp).normalized;
+
+            // Dirección de movimiento en función de la cámara
+            Vector3 direction = (camRight * MovX + camForward * MovZ).normalized;
+
+            // Rotación del modelo hacia la dirección de movimiento
+            Quaternion targetRot = Quaternion.LookRotation(direction, gravityUp);
+            model.transform.rotation = Quaternion.Slerp(model.transform.rotation, targetRot, turnTime * 10f * Time.deltaTime);
+
             currentSpeed = speedMovement;
-        }
 
-        // Mover al jugador
-        rb.MovePosition(rb.position + direction * currentSpeed * Time.deltaTime);
+            // Sprint
+            if (Input.GetKey(KeyCode.LeftShift) && inFloor && 0f <= stamina && canRun)
+            {
+                isRunnig = true;
+                currentSpeed *= runMultiplier;
+                stamina -= Time.deltaTime;
+            }
+            else
+            {
+                isRunnig = false;
+                currentSpeed = speedMovement;
+            }
+
+            // Mover al jugador
+            rb.MovePosition(rb.position + direction * currentSpeed * Time.deltaTime);
+        }
 
         // Recuperar stamina si no corre
         if (!isRunnig && stamina < maxStamina)
@@ -165,7 +168,7 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(gravityUp * jumpForce, ForceMode.Impulse);
 
             canDoubleJump = false; // ya gastó el segundo salto
-            
+
         }
         // Jetpack
         else if (jetpackActive && jetpackTimer < maxJetpackTime)
@@ -178,6 +181,32 @@ public class PlayerController : MonoBehaviour
             // Limitar duración del jetpack
             if (jetpackTimer >= maxJetpackTime)
                 jetpackActive = false;
+        }
+    }
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Planet"))
+        {
+            Respawn();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Planet"))
+        {
+            Respawn();
+        }
+    }
+
+    void Respawn()
+    {
+        transform.position = respawnPoint.position;
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
     }
 }

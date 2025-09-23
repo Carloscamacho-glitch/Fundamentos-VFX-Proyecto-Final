@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &8692897836193519024
+--- !u!1001 &1295771591147474641
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -14,11 +14,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.24999997
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.24999997
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -34,23 +34,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9679437
+      value: 0.96146387
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.12743217
+      value: 0.169532
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.21458794
+      value: 0.21315138
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.02825103
+      value: -0.037584335
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -74,23 +74,23 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 609412954049773947}
+      addedObject: {fileID: 4179489412560938071}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1743273496889807250}
+      addedObject: {fileID: 837620613957744807}
   m_SourcePrefab: {fileID: 100100000, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
---- !u!1 &8386275727785240801 stripped
+--- !u!1 &2106251637628498816 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
-  m_PrefabInstance: {fileID: 8692897836193519024}
+  m_PrefabInstance: {fileID: 1295771591147474641}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &609412954049773947
+--- !u!64 &4179489412560938071
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8386275727785240801}
+  m_GameObject: {fileID: 2106251637628498816}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -105,14 +105,14 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 6790648859355679272, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
---- !u!114 &1743273496889807250
+  m_Mesh: {fileID: -8161971417078911301, guid: 3eb4f49e3e5b3fd4c8c7c9dfa89fabf8, type: 3}
+--- !u!114 &837620613957744807
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8386275727785240801}
+  m_GameObject: {fileID: 2106251637628498816}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3039867fb3d70a844bc90d5a423b9f2f, type: 3}

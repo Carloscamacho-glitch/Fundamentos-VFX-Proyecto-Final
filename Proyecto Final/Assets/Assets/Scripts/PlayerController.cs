@@ -36,7 +36,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxJetpackTime = 3f; // duración máxima del jetpack
     [SerializeField] private float jetpackForce;   // fuerza del jetpack
 
-    public Transform respawnPoint;
+    [Header("Configuración de Vida")]
+    public int maxHealth = 3;   // Máxima cantidad de vida
+    private int currentHealth = 3;  // Vida actual
+
+    [Header("Respawn")]
+    public Transform spawnPoint; // Lugar donde reaparecerá al morir
 
     void Start()
     {
@@ -183,30 +188,43 @@ public class PlayerController : MonoBehaviour
                 jetpackActive = false;
         }
     }
-    
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Planet"))
         {
-            Respawn();
+            TakeDamage(3);
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    // Llamar a esta función cuando el jugador reciba daño
+    public void TakeDamage(int damage)
     {
-        if (other.CompareTag("Planet"))
+        currentHealth -= damage;
+        Debug.Log("Jugador recibió daño. Vida actual: " + currentHealth);
+
+        if (currentHealth <= 0)
         {
-            Respawn();
+            Die();
         }
     }
-
-    void Respawn()
+    
+    void Die()
     {
-        transform.position = respawnPoint.position;
-        if (rb != null)
+        Debug.Log("Jugador murió!");
+
+        // Reinicia la vida
+        currentHealth = maxHealth;
+
+        // Regresa al punto de inicio
+        if (spawnPoint != null)
         {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
+            transform.position = spawnPoint.position;
+            transform.rotation = spawnPoint.rotation;
+        }
+        else
+        {
+            Debug.LogWarning("No hay spawnPoint asignado.");
         }
     }
 }

@@ -406,13 +406,15 @@
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.55f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.55f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.55f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll"
-"Assets/Assets/Scripts/DronEnemy.cs"
+"Assets/Assets/Scripts/BulletController.cs"
+"Assets/Assets/Scripts/DronController.cs"
 "Assets/Assets/Scripts/FallingPlatform.cs"
 "Assets/Assets/Scripts/GameManager.cs"
 "Assets/Assets/Scripts/Gravity.cs"
 "Assets/Assets/Scripts/MobilePlatform.cs"
 "Assets/Assets/Scripts/Planeta.cs"
 "Assets/Assets/Scripts/PlayerController.cs"
+"Assets/Assets/Scripts/TurretController.cs"
 -langversion:9.0
 /deterministic
 /optimize+

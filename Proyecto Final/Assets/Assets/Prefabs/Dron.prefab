@@ -96,11 +96,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   patrolDistance: 10
-  chaseRange: 5
+  chaseRange: 7.5
   bobbingAmplitude: 0.2
   bobbingFrequency: 5
-  baseHeight: 1
+  baseHeight: 0.8
   speed: 5
+  closeRange: 2
+  closeDuration: 1.5
+  retreatDuration: 0.5
 --- !u!1001 &7305697884599527291
 PrefabInstance:
   m_ObjectHideFlags: 0

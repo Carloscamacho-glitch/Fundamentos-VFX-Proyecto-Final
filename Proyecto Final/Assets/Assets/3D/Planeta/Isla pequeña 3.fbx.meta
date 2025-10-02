@@ -3,7 +3,12 @@ guid: ec3c06588591fac4b8c8ecf121d31825
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Islas
+    second: {fileID: 2100000, guid: 40b6a9b8c9ed9a642b86266e5e21f1aa, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

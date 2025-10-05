@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 3619853424153452782}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.93, y: 0.8, z: 7.9}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -104,6 +104,7 @@ MonoBehaviour:
   closeRange: 2
   closeDuration: 1.5
   retreatDuration: 0.5
+  explosion: {fileID: 318548065960394719, guid: ad01a94bcb278284cb87870a5e49ec0c, type: 3}
 --- !u!1001 &7305697884599527291
 PrefabInstance:
   m_ObjectHideFlags: 0

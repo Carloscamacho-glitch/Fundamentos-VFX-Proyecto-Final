@@ -3,15 +3,14 @@ using UnityEngine;
 public class MobilePlatform : MonoBehaviour
 {
     [Header("Referencias")]
-    [SerializeField] private Transform planetCenter;//Centro del planeta para usarlo como pivote
+    [SerializeField] private Transform planetCenter;                    //Centro del planeta para usarlo como pivote
 
     [Header("Movimiento")]
-    [SerializeField] private float rotationSpeed;   //Velocidad con la que se realizara el movimiento
-    [SerializeField] private float maxAngle;        // límite de rotación en grados
-    private float currentAngle = 0f;                //coloca el angulo actual como 0 para aplicar las transfomraciones apartir de ahi
-    private int direction = 1;                      // 1 = ida, -1 = vuelta
-
-    [SerializeField] private Vector3 rotationAxis;                    // Eje en el que se realiza el movimiento de la plataforma
+    [SerializeField] private float rotationSpeed;                       //Velocidad con la que se realizara el movimiento
+    [SerializeField] private float maxAngle;                            // límite de rotación en grados
+    private float currentAngle = 0f;                                    //coloca el angulo actual como 0 para aplicar las transfomraciones apartir de ahi
+    private int direction = 1;                                          // 1 = ida, -1 = vuelta
+    [SerializeField] private Vector3 rotationAxis;                      // Eje en el que se realiza el movimiento de la plataforma
 
     // Se aplica la rotación a la plataforma
     private void FixedUpdate()

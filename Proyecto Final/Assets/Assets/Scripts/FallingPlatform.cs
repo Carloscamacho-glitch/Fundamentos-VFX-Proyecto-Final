@@ -3,11 +3,11 @@ using UnityEngine;
 public class FallingPlatform : MonoBehaviour
 {
     [Header("Referencias")]
-    [SerializeField] private Rigidbody rb;          // referencia al rigidbody
+    [SerializeField] private Rigidbody rb;              // referencia al rigidbody
 
     [Header("Destruccion")]
-    [SerializeField] private float fallDelay;   //Tiempo de espera para que caiga
-    private float destroyDelay = 3f;    //Tiempo de espera para destruir la plataforma
+    [SerializeField] private float fallDelay;           //Tiempo de espera para que caiga
+    private float destroyDelay = 3f;                    //Tiempo de espera para destruir la plataforma
 
     void Start()
     {

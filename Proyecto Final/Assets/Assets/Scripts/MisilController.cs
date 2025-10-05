@@ -2,24 +2,22 @@ using UnityEngine;
 
 public class MisilController : MonoBehaviour
 {
-    [SerializeField] private float speed = 10f;       // Velocidad del misil
-    [SerializeField] private float stopDistance = 0.1f; // Distancia mínima para destruirlo
+    [SerializeField] private float speed = 10f;                 // Velocidad del misil
+    [SerializeField] private float stopDistance = 0.1f;         // Distancia mínima para destruirlo
+    private Rigidbody rb;                                       // Referencia al Rigidbody
+    private Vector3 targetPosition;                             // Posición del objetivo
+    private bool targetSet = false;                             // Si el objetivo ha sido asignado
+    [SerializeField] private GameObject explosion;              // Prefab de la explosión
 
-    private Rigidbody rb;
-    private Vector3 targetPosition;
-    private bool targetSet = false;
-
-    // Método para asignar el objetivo al misil
     public void SetTarget(Vector3 target)
     {
-        targetPosition = target;
+        targetPosition = target;    // Asignar el objetivo
         targetSet = true;
     }
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;
     }
 
     private void FixedUpdate()
@@ -49,6 +47,7 @@ public class MisilController : MonoBehaviour
         if (Vector3.Distance(transform.position, targetPosition) <= stopDistance)
         {
             Destroy(gameObject);
+            Instantiate(explosion, transform.position, Quaternion.identity);
         }
     }
 
@@ -60,12 +59,14 @@ public class MisilController : MonoBehaviour
             if (player != null) player.TakeDamage(1);
 
             Destroy(gameObject);
+            Instantiate(explosion, transform.position, Quaternion.identity);
         }
 
         // Destruye el misil si golpea cualquier cosa que no sea la torreta
         if (!collision.collider.CompareTag("Turret"))
         {
             Destroy(gameObject);
+            Instantiate(explosion, transform.position, Quaternion.identity);
         }
     }
 }

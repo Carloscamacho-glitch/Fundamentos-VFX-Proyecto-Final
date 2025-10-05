@@ -3,38 +3,39 @@ using UnityEngine;
 public class DronController : MonoBehaviour
 {
     [Header("Patrullaje")]
-    [SerializeField] private float patrolDistance;
-    private Vector3 patrolStart;
-    private Vector3 patrolEnd;
-    private bool movingToEnd = true;
+    [SerializeField] private float patrolDistance;              // distancia total del patrullaje
+    private Vector3 patrolStart;                                // punto inicial del patrullaje
+    private Vector3 patrolEnd;                                  // punto final del patrullaje   
+    private bool movingToEnd = true;                            // ver si se esta moviendo hacia el punto final
 
     [Header("Persecusión")]
-    [SerializeField] private float chaseRange = 7.5f;
-    [SerializeField] private float bobbingAmplitude = 0.5f;
-    [SerializeField] private float bobbingFrequency = 5f;
-    [SerializeField] private float baseHeight = 1f;
-    private float bobbingTimer = 0f;
-    private bool freezeHeight = false;
-    private float frozenHeight = 0f;
-    private bool canChase = true;
+    [SerializeField] private float chaseRange = 7.5f;           // distancia a la que empieza a perseguir al jugador
+    [SerializeField] private float bobbingAmplitude = 0.5f;     // amplitud del movimiento vertical
+    [SerializeField] private float bobbingFrequency = 5f;       // frecuencia del movimiento vertical
+    [SerializeField] private float baseHeight = 1f;             // altura base sobre el suelo
+    private float bobbingTimer = 0f;                            // temporizador para el movimiento vertical
+    private bool freezeHeight = false;                          // si debe congelar la altura actual
+    private float frozenHeight = 0f;                            // altura congelada
+    private bool canChase = true;                               // si puede perseguir al jugador (false si está en el aire)
 
     [Header("Movimiento")]
-    [SerializeField] private float speed;
-    private Vector3 lastMoveDirection = Vector3.forward;
-    private bool isGrounded;
+    [SerializeField] private float speed;                       // velocidad de movimiento
+    private Vector3 lastMoveDirection = Vector3.forward;        // última dirección de movimiento (para rotación suave)
+    private bool isGrounded;                                    // si está en el suelo
 
     [Header("Ataque")]
-    [SerializeField] private float closeRange = 3f;
-    [SerializeField] private float closeDuration = 3f;
-    private float closeTimer = 0f;
-    private bool inCloseRange = false;
-    [SerializeField] private float retreatDuration = 0.5f; // tiempo que retrocede antes del ataque
-    private float retreatTimer = 0f;
-    private bool isRetreating = false;
+    [SerializeField] private float closeRange = 3f;             // distancia a la que inicia el ataque directo
+    [SerializeField] private float closeDuration = 3f;          // duración del ataque directo
+    private float closeTimer = 0f;                              // temporizador del ataque directo
+    private bool inCloseRange = false;                          // si está en modo ataque directo 
+    [SerializeField] private float retreatDuration = 0.5f;      // tiempo que retrocede antes del ataque
+    private float retreatTimer = 0f;                            // temporizador del retroceso
+    private bool isRetreating = false;                          // si está en modo retroceso antes del ataque
 
     [Header("Referencias")]
-    private Rigidbody rb;
-    private Transform player;
+    private Rigidbody rb;                                       // referencia al rigidbody
+    private Transform player;                                   // referencia al jugador
+    [SerializeField] private GameObject explosion;              // Prefab de la explosión
 
     private void Start()
     {
@@ -119,7 +120,6 @@ public class DronController : MonoBehaviour
         retreatTimer = retreatDuration;
     }
 
-    // 🔹 Retrocede antes del ataque
     private void RetreatBehavior()
     {
         float moveSpeed = speed; // velocidad normal al retroceder
@@ -132,7 +132,6 @@ public class DronController : MonoBehaviour
         }
     }
 
-    // 🔹 Ataque hacia adelante
     private void AttackBehavior()
     {
         float moveSpeed = speed * 2f;
@@ -180,8 +179,6 @@ public class DronController : MonoBehaviour
         {
             float desiredHeight = baseHeight + Mathf.Sin(bobbingTimer * bobbingFrequency) * bobbingAmplitude;
             float currentHeight = hit.distance;
-
-            
 
             // Actualiza estado de grounded
             isGrounded = Mathf.Abs(currentHeight - desiredHeight) < 0.8f;
@@ -252,12 +249,15 @@ public class DronController : MonoBehaviour
             Vector3 contactNormal = contact.normal;
             if (Vector3.Dot(contactNormal, -planetUp) > 0.5f)
             {
+                //Se destruye el dron y se instancia la explosión
                 Destroy(gameObject);
+                Instantiate(explosion, transform.position, Quaternion.identity);
                 return;
             }
             else
             {
                 Destroy(gameObject);
+                Instantiate(explosion, transform.position, Quaternion.identity);
                 if (player != null) player.TakeDamage(1);
                 return;
             }

@@ -5,12 +5,12 @@ using UnityEngine;
 public class Planeta : MonoBehaviour
 {
     [Header("Referencias")]
-    public List<Rigidbody> objetos = new List<Rigidbody>();
-    public static Planeta planeta;
+    public List<Rigidbody> objetos = new List<Rigidbody>();         // lista de objetos afectados por la gravedad del planeta
+    public static Planeta planeta;                                  // referencia estática al planeta
 
     [Header("Gravedad del Planeta")]
-    [SerializeField] private float gravity;
-    [SerializeField] private float radiusGravity;
+    [SerializeField] private float gravity;                         // fuerza de gravedad del planeta
+    [SerializeField] private float radiusGravity;                   // radio de influencia de la gravedad del planeta
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()

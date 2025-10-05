@@ -2,16 +2,15 @@ using UnityEngine;
 
 public class BulletController : MonoBehaviour
 {
-    [SerializeField] private float speed = 10f;
-    [SerializeField] private float baseHeight = 1f; 
-    [SerializeField] private float maxRaycastDistance = 10f;
-    [SerializeField] private float lifeTime = 5f; // Tiempo total de la bala
-    [SerializeField] private float minHeight = 0.1f; // Altura mínima al final del lifetime
-
-    private Rigidbody rb;
-    private Vector3 lastMoveDirection = Vector3.forward;
-    private Quaternion initialRotation;
-    private float elapsedTime = 0f; // tiempo desde que se creó la bala
+    [SerializeField] private float speed = 10f;                         // Velocidad de la bala
+    [SerializeField] private float baseHeight = 1f;                     // Altura base sobre el suelo
+    [SerializeField] private float maxRaycastDistance = 10f;            // Distancia máxima del raycast hacia el suelo
+    [SerializeField] private float lifeTime = 5f;                       // Tiempo total de la bala
+    [SerializeField] private float minHeight = 0.1f;                    // Altura mínima al final del lifetime
+    private Rigidbody rb;                                               // Referencia al Rigidbody
+    private Vector3 lastMoveDirection = Vector3.forward;                // Última dirección de movimiento
+    private Quaternion initialRotation;                                 // Rotación inicial de la bala
+    private float elapsedTime = 0f;                                     // tiempo desde que se creó la bala
 
     private void Start()
     {
@@ -19,7 +18,7 @@ public class BulletController : MonoBehaviour
         rb.useGravity = false;
 
         initialRotation = transform.rotation;
-        Destroy(gameObject, lifeTime); // destrucción automática
+        Destroy(gameObject, lifeTime); // destrucción automática tras el lifetime
     }
 
     private void FixedUpdate()

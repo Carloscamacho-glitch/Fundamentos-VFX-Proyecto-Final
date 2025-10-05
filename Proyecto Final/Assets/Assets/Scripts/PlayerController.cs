@@ -201,7 +201,6 @@ public class PlayerController : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        Debug.Log("Jugador recibió daño. Vida actual: " + currentHealth);
 
         if (currentHealth <= 0)
         {
@@ -211,8 +210,6 @@ public class PlayerController : MonoBehaviour
     
     void Die()
     {
-        Debug.Log("Jugador murió!");
-
         // Reinicia la vida
         currentHealth = maxHealth;
 
@@ -221,10 +218,6 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = spawnPoint.position;
             transform.rotation = spawnPoint.rotation;
-        }
-        else
-        {
-            Debug.LogWarning("No hay spawnPoint asignado.");
         }
     }
 }

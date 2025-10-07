@@ -54,6 +54,7 @@ public class JefeController : MonoBehaviour
     [SerializeField] private Transform[] bulletSpawnPoints;         // Puntos de spawn de las balas
     [SerializeField] private GameObject smoke;                      // Prefab de la explosión al recibir daño
     [SerializeField] private GameObject[] coheteParticles;          // Partículas de los cohetes
+    [SerializeField] private BossHealthBar bossHealthBar;           // Referencia a la barra de vida del jefe
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -70,6 +71,12 @@ public class JefeController : MonoBehaviour
 
         ResetChangeTimer();
         DesactivarCohetes();
+    }
+    
+    private void Update()
+    {
+        if (bossHealthBar != null)
+            bossHealthBar.SetHealth(currentHealth, maxHealth);
     }
 
     private void FixedUpdate()
@@ -98,12 +105,17 @@ public class JefeController : MonoBehaviour
 
             if (distance <= detectionRange)
             {
+                if (bossHealthBar != null)
+                    bossHealthBar.SetVisible(true);
+
                 rb.constraints = RigidbodyConstraints.None;
                 Atack();
             }
             else
             {
                 ResetToInitialState();
+                if (bossHealthBar != null)
+                    bossHealthBar.SetVisible(false);
                 rb.constraints = RigidbodyConstraints.FreezeAll;
             }
         }
@@ -287,6 +299,7 @@ public class JefeController : MonoBehaviour
     private void TakeDamage(int amount)
     {
         currentHealth -= amount;
+        
         if (currentHealth <= 0)
         {
             Die();
@@ -310,6 +323,8 @@ public class JefeController : MonoBehaviour
     private void Die()
     {
         ResetToInitialState();
+        if (bossHealthBar != null)
+            bossHealthBar.SetVisible(false);
     }
 
     private void GirarYMoverBrazos()

@@ -3,45 +3,47 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Referencias")]
-    [SerializeField] private Rigidbody rb;          // referencia al rigidbody
-    [SerializeField] private Transform model;         // transform del modelo (hijo del jugador)
-    [SerializeField] private Transform floor;           // transform para detectar suelo
-    [SerializeField] private LayerMask floorMask;       // capa del suelo
-    [SerializeField] private Transform cameraTransform; // la cámara principal o Cinemachine FreeLook
+    [SerializeField] private Rigidbody rb;                          // referencia al rigidbody
+    [SerializeField] private Transform model;                       // transform del modelo (hijo del jugador)
+    [SerializeField] private Transform floor;                       // transform para detectar suelo
+    [SerializeField] private LayerMask floorMask;                   // capa del suelo
+    [SerializeField] private Transform cameraTransform;             // la cámara principal o Cinemachine FreeLook
+    [SerializeField] private HealthBar healthBar;                   // referencia a la barra de vida
+    [SerializeField] private StaminaBar staminaBar;                 // referencia a la barra de stamina
 
     [Header("Movimiento")]
-    [SerializeField] private float speedMovement = 5f;  // velocidad de movimiento
-    [SerializeField] private float turnTime = 1f;     // tiempo de giro
-    [SerializeField] private float runMultiplier = 3f;
-    [SerializeField] private float maxStamina;
-    [SerializeField] private float stamina;
-    [SerializeField] private float currentSpeed;
-    [SerializeField] private float staminaRecoveryRate = 1f;
-    [SerializeField] private bool canRun;
-    [SerializeField] private bool isRunnig;
+    [SerializeField] private float speedMovement = 5f;              // velocidad de movimiento
+    [SerializeField] private float turnTime = 1f;                   // tiempo de giro
+    [SerializeField] private float runMultiplier = 4f;              // multiplicador de velocidad al correr
+    [SerializeField] private float maxStamina;                      // stamina máxima
+    [SerializeField] private float stamina;                         // stamina actual
+    [SerializeField] private float currentSpeed;                    // velocidad actual
+    [SerializeField] private float staminaRecoveryRate = 1f;        // tasa de recuperación de stamina
+    [SerializeField] private bool canRun;                           // si el jugador puede correr
+    [SerializeField] private bool isRunnig;                         // si el jugador está corriendo
 
     [Header("Salto")]
-    [SerializeField] private float jumpForce = 5f;      // fuerza de salto
-    [SerializeField] private bool doubleJumpUnlocked = false; // condición para habilitar doble salto
-    [SerializeField] private bool isJumping = true;        // detectar si el jugador esta saltando
-    [SerializeField] private bool canDoubleJump;    // si el jugador aún tiene el segundo salto disponible
-    [SerializeField] private float floorDistance = 0.1f;// radio de detección
-    [SerializeField] private bool jumpRequest;        // si el jugador ha solicitado un salto (input)
-    [SerializeField] private bool inFloor;         // si el jugador está en el suelo
+    [SerializeField] private float jumpForce = 5f;                  // fuerza de salto
+    [SerializeField] private bool doubleJumpUnlocked = false;       // condición para habilitar doble salto
+    [SerializeField] private bool isJumping = true;                 // detectar si el jugador esta saltando
+    [SerializeField] private bool canDoubleJump;                    // si el jugador aún tiene el segundo salto disponible
+    [SerializeField] private float floorDistance = 0.1f;            // radio de detección
+    [SerializeField] private bool jumpRequest;                      // si el jugador ha solicitado un salto (input)
+    [SerializeField] private bool inFloor;                          // si el jugador está en el suelo
 
     [Header("Jetpack")]
-    [SerializeField] private bool jetpack;         // si el jugador tiene jetpack
-    [SerializeField] private bool jetpackActive;   // si el jetpack está activo
-    [SerializeField] private float jetpackTimer;    // fuerza del jetpack
-    [SerializeField] private float maxJetpackTime = 3f; // duración máxima del jetpack
-    [SerializeField] private float jetpackForce;   // fuerza del jetpack
+    [SerializeField] private bool jetpack;                          // si el jugador tiene jetpack
+    [SerializeField] private bool jetpackActive;                    // si el jetpack está activo
+    [SerializeField] private float jetpackTimer;                    // fuerza del jetpack
+    [SerializeField] private float maxJetpackTime = 3f;             // duración máxima del jetpack
+    [SerializeField] private float jetpackForce;                    // fuerza del jetpack
 
     [Header("Configuración de Vida")]
-    public int maxHealth = 3;   // Máxima cantidad de vida
-    private int currentHealth = 3;  // Vida actual
+    [SerializeField] private int maxHealth = 3;                     // Máxima cantidad de vida
+    [SerializeField] private int currentHealth = 3;                 // Vida actual
 
     [Header("Respawn")]
-    public Transform spawnPoint; // Lugar donde reaparecerá al morir
+    public Transform spawnPoint;                                    // Lugar donde reaparecerá al morir
 
     void Start()
     {
@@ -49,12 +51,17 @@ public class PlayerController : MonoBehaviour
 
         model = transform.GetChild(0).gameObject.transform;
 
-        // Importante para que no se vuelque con físicas raras
         rb.freezeRotation = true;
     }
 
     void Update()
     {
+        if (healthBar != null)
+            healthBar.SetHealth(currentHealth, maxHealth);
+
+        if (staminaBar != null)
+            staminaBar.SetStamina(stamina, maxStamina);
+        
         Walk();
         JumpRequest();
     }
@@ -203,9 +210,7 @@ public class PlayerController : MonoBehaviour
         currentHealth -= damage;
 
         if (currentHealth <= 0)
-        {
             Die();
-        }
     }
     
     void Die()

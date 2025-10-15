@@ -36,6 +36,7 @@ public class DronController : MonoBehaviour
     private Rigidbody rb;                                       // referencia al rigidbody
     private Transform player;                                   // referencia al jugador
     [SerializeField] private GameObject explosion;              // Prefab de la explosión
+    [SerializeField] private GameObject chatarra;              // Prefab de la explosión
 
     private void Start()
     {
@@ -252,6 +253,7 @@ public class DronController : MonoBehaviour
                 //Se destruye el dron y se instancia la explosión
                 Destroy(gameObject);
                 Instantiate(explosion, transform.position, Quaternion.identity);
+                Instantiate(chatarra, transform.position, transform.rotation * Quaternion.Euler(0, 0, 180));
                 return;
             }
             else

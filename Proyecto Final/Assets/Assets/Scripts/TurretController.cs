@@ -17,6 +17,7 @@ public class TurretController : MonoBehaviour
     private Transform player;                                   // Referencia al jugador
     [SerializeField] private GameObject bulletPrefab;           // Prefab de la bala
     [SerializeField] private GameObject explosion;              // Prefab de la explosión
+    [SerializeField] private GameObject chatarra;              // Prefab de la chatarra
 
     private void Start()
     {
@@ -152,6 +153,8 @@ public class TurretController : MonoBehaviour
                 Destroy(gameObject);
                 Vector3 spawnPos = transform.position + Vector3.up * 1f;
                 Instantiate(explosion, spawnPos, Quaternion.identity);
+                spawnPos = transform.position + transform.up * 1f;
+                Instantiate(chatarra, spawnPos, transform.rotation * Quaternion.Euler(0, 0, 180));
                 return;
             }
             else

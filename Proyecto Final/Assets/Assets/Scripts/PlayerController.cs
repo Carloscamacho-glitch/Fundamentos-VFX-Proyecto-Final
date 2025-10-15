@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -10,6 +11,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform cameraTransform;             // la cámara principal o Cinemachine FreeLook
     [SerializeField] private HealthBar healthBar;                   // referencia a la barra de vida
     [SerializeField] private StaminaBar staminaBar;                 // referencia a la barra de stamina
+    [SerializeField] private ChatarraController chatarraController;                   // referencia a la barra de vida
+    [SerializeField] private Animator animator;                     // referencia al animator
 
     [Header("Movimiento")]
     [SerializeField] private float speedMovement = 5f;              // velocidad de movimiento
@@ -42,8 +45,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int maxHealth = 3;                     // Máxima cantidad de vida
     [SerializeField] private int currentHealth = 3;                 // Vida actual
 
+    [Header("Objetos recogibles")]
+    [SerializeField] private int totalChatarra = 0;                                   // Cantidad total de chatarra recogida
+
     [Header("Respawn")]
     public Transform spawnPoint;                                    // Lugar donde reaparecerá al morir
+
+    [SerializeField] private bool hasTouchedGround = false;
 
     void Start()
     {
@@ -61,6 +69,9 @@ public class PlayerController : MonoBehaviour
 
         if (staminaBar != null)
             staminaBar.SetStamina(stamina, maxStamina);
+
+        if (chatarraController != null)
+            chatarraController.UpdateChatarra(totalChatarra);
         
         Walk();
         JumpRequest();
@@ -78,6 +89,8 @@ public class PlayerController : MonoBehaviour
 
         if (MovX != 0f || MovZ != 0f)
         {
+            animator.SetBool("Walk", true);
+
             // --- Dirección de la cámara ---
             Vector3 gravityUp = (transform.position - Planeta.planeta.transform.position).normalized;
 
@@ -100,15 +113,21 @@ public class PlayerController : MonoBehaviour
                 isRunnig = true;
                 currentSpeed *= runMultiplier;
                 stamina -= Time.deltaTime;
+                animator.speed = 2f;
             }
             else
             {
                 isRunnig = false;
                 currentSpeed = speedMovement;
+                animator.speed = 1f;
             }
 
             // Mover al jugador
             rb.MovePosition(rb.position + direction * currentSpeed * Time.deltaTime);
+        }
+        else
+        {
+            animator.SetBool("Walk", false);
         }
 
         // Recuperar stamina si no corre
@@ -128,6 +147,10 @@ public class PlayerController : MonoBehaviour
             canDoubleJump = doubleJumpUnlocked;
             jetpackActive = false;
             jetpackTimer = 0f;
+            animator.SetBool("Jumping", false);
+            animator.SetBool("Jumping2", false);
+            animator.SetBool("Jetpack", false);
+            animator.SetBool("Fall", false);
         }
         else
         {
@@ -135,23 +158,31 @@ public class PlayerController : MonoBehaviour
         }
 
         // Detectar input de salto y jetpack
-        if (Input.GetKeyDown(KeyCode.Space) && inFloor)
+        if (Input.GetKeyDown(KeyCode.Space) && inFloor && !isJumping)
         {
+            animator.SetBool("Jumping", true);
             jumpRequest = true;
             jetpackActive = false;
+            hasTouchedGround = false;
         }
-        else if (Input.GetKeyDown(KeyCode.Space) && !inFloor && canDoubleJump)
+        else if (Input.GetKeyDown(KeyCode.Space) && isJumping && !inFloor && canDoubleJump)
         {
+            animator.SetBool("Jumping2", true);
             jumpRequest = true;
             jetpackActive = false;
+            animator.SetBool("Jumping", false);
         }
         else if (Input.GetKeyDown(KeyCode.Space) && isJumping && !inFloor && jetpack)
         {
+            animator.SetBool("Jetpack", true);
             jetpackActive = true;
         }
         else if (Input.GetKeyUp(KeyCode.Space) && isJumping && !inFloor && jetpack)
         {
             jetpackActive = false;
+            animator.SetBool("Jumping2", false);
+            animator.SetBool("Jetpack", false);
+            animator.SetBool("Fall", true);
         }
     }
 
@@ -164,13 +195,13 @@ public class PlayerController : MonoBehaviour
         Vector3 gravityUp = (transform.position - Planeta.planeta.transform.position).normalized;
 
         // Primer salto
-        if (jumpRequest && inFloor)
+        if (jumpRequest && inFloor && !isJumping)
         {
             rb.AddForce(gravityUp * jumpForce, ForceMode.Impulse);
             jumpRequest = false;
         }
         // Segundo salto (en el aire)
-        else if (jumpRequest && !inFloor && canDoubleJump)
+        else if (jumpRequest && isJumping && !inFloor && canDoubleJump)
         {
             // Reiniciar la velocidad vertical antes de aplicar el impulso
             Vector3 velocity = rb.linearVelocity;
@@ -180,7 +211,6 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(gravityUp * jumpForce, ForceMode.Impulse);
 
             canDoubleJump = false; // ya gastó el segundo salto
-
         }
         // Jetpack
         else if (jetpackActive && jetpackTimer < maxJetpackTime)
@@ -202,6 +232,27 @@ public class PlayerController : MonoBehaviour
         {
             TakeDamage(3);
         }
+
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Floor") && !hasTouchedGround)
+        {
+            hasTouchedGround = true;
+            StopAllCoroutines(); // por si cae varias veces seguidas
+            StartCoroutine(TemporaryKinematic());
+        }
+    }
+
+    private System.Collections.IEnumerator TemporaryKinematic()
+    {
+        // Detener movimiento antes de volverlo kinematic
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        // Esperar un pequeño frame antes de activar kinematic
+        yield return new WaitForFixedUpdate();
+
+        rb.isKinematic = true;
+        yield return new WaitForSeconds(0.05f); // pausa corta
+        rb.isKinematic = false;
     }
 
     // Llamar a esta función cuando el jugador reciba daño
@@ -212,7 +263,7 @@ public class PlayerController : MonoBehaviour
         if (currentHealth <= 0)
             Die();
     }
-    
+
     void Die()
     {
         // Reinicia la vida
@@ -224,5 +275,10 @@ public class PlayerController : MonoBehaviour
             transform.position = spawnPoint.position;
             transform.rotation = spawnPoint.rotation;
         }
+    }
+    
+    public void AddChatarra(int cantidad)
+    {
+        totalChatarra += cantidad;
     }
 }

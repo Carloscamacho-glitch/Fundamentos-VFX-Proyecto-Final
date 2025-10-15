@@ -285,6 +285,16 @@ public class JefeController : MonoBehaviour
                 // Reiniciar al estado inicial
                 ResetToInitialState();
             }
+            else if (currentHealth == 0)
+            {
+                Transform jefeC = transform.Find("JefeC");
+                if (jefeC != null)
+                {
+                    Transform centro = jefeC.Find("Centro");
+                    if (centro != null)
+                        Destroy(centro.gameObject);
+                }
+            }
         }
     }
 

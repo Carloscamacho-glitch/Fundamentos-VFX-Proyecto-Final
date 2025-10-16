@@ -46,10 +46,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int currentHealth = 3;                 // Vida actual
 
     [Header("Objetos recogibles")]
-    [SerializeField] private int totalChatarra = 0;                                   // Cantidad total de chatarra recogida
+    [SerializeField] private int totalChatarra = 0;                 // Cantidad total de chatarra recogida
+    [SerializeField] private int totalMateriales = 0;               // Cantidad total de materiales recogidos
+    [SerializeField] private bool Motor = false;                    // Si el jugador tiene el motor
 
     [Header("Respawn")]
     public Transform spawnPoint;                                    // Lugar donde reaparecerá al morir
+
+    public bool TieneMotor() => Motor;
+    public int GetMateriales() => totalMateriales;
 
     [SerializeField] private bool hasTouchedGround = false;
 
@@ -276,9 +281,19 @@ public class PlayerController : MonoBehaviour
             transform.rotation = spawnPoint.rotation;
         }
     }
-    
+
     public void AddChatarra(int cantidad)
     {
         totalChatarra += cantidad;
+    }
+
+    public void AddMateriales(int cantidad)
+    {
+        totalMateriales += cantidad;
+    }
+    
+    public void AddMotor(bool valor)
+    {
+        Motor = valor;
     }
 }

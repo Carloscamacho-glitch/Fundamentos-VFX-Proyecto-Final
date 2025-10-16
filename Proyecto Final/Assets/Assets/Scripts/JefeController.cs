@@ -285,7 +285,7 @@ public class JefeController : MonoBehaviour
                 // Reiniciar al estado inicial
                 ResetToInitialState();
             }
-            else if (currentHealth == 0)
+            else if (canTakeDamageFromTop && currentHealth == 0)
             {
                 Transform jefeC = transform.Find("JefeC");
                 if (jefeC != null)
@@ -293,6 +293,13 @@ public class JefeController : MonoBehaviour
                     Transform centro = jefeC.Find("Centro");
                     if (centro != null)
                         Destroy(centro.gameObject);
+
+                    // Accedemos al componente del jugador que gestiona mel motor
+                    PlayerController player = collision.gameObject.GetComponent<PlayerController>();
+                    if (player != null)
+                    {
+                        player.AddMotor(true);
+                    }
                 }
             }
         }

@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class Chatarra : MonoBehaviour
 {
-
     [SerializeField] private float rotationSpeed = 90f;
 
     private void Update()
@@ -18,7 +17,7 @@ public class Chatarra : MonoBehaviour
         // Cantidad aleatoria entre 1 y 10
         int cantidadChatarra = Random.Range(1, 11);
 
-        // Accedemos al componente del jugador que gestiona el inventario
+        // Accedemos al componente del jugador que gestiona la chatarra
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
         if (player != null)
         {

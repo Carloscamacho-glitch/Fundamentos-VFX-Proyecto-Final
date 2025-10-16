@@ -4,6 +4,7 @@ public class MisilController : MonoBehaviour
 {
     [SerializeField] private float speed = 10f;                 // Velocidad del misil
     [SerializeField] private float stopDistance = 0.1f;         // Distancia mínima para destruirlo
+    [SerializeField] private float lifeTime = 3f;               // Tiempo total de la bala
     private Rigidbody rb;                                       // Referencia al Rigidbody
     private Vector3 targetPosition;                             // Posición del objetivo
     private bool targetSet = false;                             // Si el objetivo ha sido asignado
@@ -13,6 +14,8 @@ public class MisilController : MonoBehaviour
     {
         targetPosition = target;    // Asignar el objetivo
         targetSet = true;
+
+        Destroy(gameObject, lifeTime); // destrucción automática tras el lifetime
     }
 
     private void Start()

@@ -151,9 +151,8 @@ public class TurretController : MonoBehaviour
             {
                 // Jugador lo pisa desde arriba
                 Destroy(gameObject);
-                Vector3 spawnPos = transform.position + Vector3.up * 1f;
+                Vector3 spawnPos = transform.position + transform.up * 1f;
                 Instantiate(explosion, spawnPos, Quaternion.identity);
-                spawnPos = transform.position + transform.up * 1f;
                 Instantiate(chatarra, spawnPos, transform.rotation * Quaternion.Euler(0, 0, 180));
                 return;
             }

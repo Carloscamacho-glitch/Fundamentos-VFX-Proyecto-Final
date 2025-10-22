@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform cameraTransform;             // la cámara principal o Cinemachine FreeLook
     [SerializeField] private HealthBar healthBar;                   // referencia a la barra de vida
     [SerializeField] private StaminaBar staminaBar;                 // referencia a la barra de stamina
+    [SerializeField] private JetpackBar jetpackBar;                 // referencia a la barra de jetpack
     [SerializeField] private ChatarraController chatarraController; // referencia a la barra de vida
     [SerializeField] private Animator animator;                     // referencia al animator
     [SerializeField] private GameObject[] coheteParticles;          // Partículas de los cohetes
@@ -38,7 +39,7 @@ public class PlayerController : MonoBehaviour
     [Header("Jetpack")]
     [SerializeField] private bool jetpack;                          // si el jugador tiene jetpack
     [SerializeField] private bool jetpackActive;                    // si el jetpack está activo
-    [SerializeField] private float jetpackTimer;                    // fuerza del jetpack
+    [SerializeField] private float jetpackTimer;                    // tiempo del jetpack
     [SerializeField] private float maxJetpackTime = 3f;             // duración máxima del jetpack
     [SerializeField] private float jetpackForce;                    // fuerza del jetpack
 
@@ -75,6 +76,9 @@ public class PlayerController : MonoBehaviour
 
         if (staminaBar != null)
             staminaBar.SetStamina(stamina, maxStamina);
+
+        if (jetpackBar != null)
+            jetpackBar.SetJetpack(jetpackTimer, maxJetpackTime);
 
         if (chatarraController != null)
             chatarraController.UpdateChatarra(totalChatarra);
@@ -181,7 +185,6 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Space) && isJumping && !inFloor && jetpack)
         {
-            ActivarCohetes();
             animator.SetBool("Jetpack", true);
             jetpackActive = true;
         }
@@ -231,7 +234,13 @@ public class PlayerController : MonoBehaviour
 
             // Limitar duración del jetpack
             if (jetpackTimer >= maxJetpackTime)
+            {
+                DesactivarCohetes();
                 jetpackActive = false;
+            } else
+            {
+                ActivarCohetes();
+            }
         }
     }
 

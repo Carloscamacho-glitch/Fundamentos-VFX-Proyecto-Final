@@ -10,6 +10,10 @@ public class NaveController : MonoBehaviour
 
     [SerializeField] private Transform jugador;
 
+    [SerializeField] private AlertaMateriales alertaMateriales;
+    [SerializeField] private AlertaNaveReparada alertaNaveReparada;
+    [SerializeField] private float avisoTimer = 0f;
+
     void Update()
     {
         if (jugador == null) return;
@@ -20,7 +24,7 @@ public class NaveController : MonoBehaviour
         float distancia = Vector3.Distance(transform.position, jugador.position);
 
         // Si está dentro del rango de detección
-        if (distancia <= rangoDeteccion )
+        if (distancia <= rangoDeteccion)
         {
             if (Input.GetKey(KeyCode.E))
             {
@@ -28,6 +32,7 @@ public class NaveController : MonoBehaviour
                 {
                     RepararNave();
                     naverReparada = true;
+                    MostrarAvisoNaveReparada();
                 }
                 else if (naverReparada)
                 {
@@ -35,20 +40,43 @@ public class NaveController : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("No tienes los materiales o el motor necesario para reparar la nave."); // poner en interfaz después
+                    MostrarAvisoFaltanMateriales();
                 }
-            }else
-            {
-                Debug.Log("Presiona 'E' para reparar la nave.");    // poner en interfaz después
             }
+        }
+        
+        // Ocultar el aviso tras un tiempo
+        if (avisoTimer > 0)
+        {
+            avisoTimer -= Time.deltaTime;
+            if (avisoTimer <= 0 && alertaMateriales != null)
+                alertaMateriales.MostrarAvisoFaltanMateriales(false);
+            if (avisoTimer <= 0 && alertaNaveReparada != null)
+                alertaNaveReparada.MostrarAvisoNaveReparada(false);
         }
     }
 
     private void RepararNave()
     {
-        Debug.Log("¡La nave ha sido reparada!"); // poner en interfaz después
-
         naveRota.SetActive(false);
         nave.SetActive(true);
+    }
+
+    private void MostrarAvisoNaveReparada()
+    {
+        if (alertaNaveReparada != null)
+        {
+            alertaNaveReparada.MostrarAvisoNaveReparada(true);
+            avisoTimer = 3f; // se mostrará durante 3 segundos
+        }
+    }
+
+    private void MostrarAvisoFaltanMateriales()
+    {
+        if (alertaMateriales != null)
+        {
+            alertaMateriales.MostrarAvisoFaltanMateriales(true);
+            avisoTimer = 3f; // se mostrará durante 3 segundos
+        }
     }
 }

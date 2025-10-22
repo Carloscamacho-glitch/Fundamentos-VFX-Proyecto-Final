@@ -46,6 +46,11 @@ public class JefeController : MonoBehaviour
     [SerializeField] private float fireRate = 1f;                   // balas por segundo
     private float fireCooldown = 0f;                                // Tiempo restante para el próximo disparo
     private bool canShoot = false;                                  // Si puede disparar
+    
+    [Header("Delay antes del ataque")]
+    [SerializeField] private float attackDelay = 3f;                // Tiempo que espera antes de atacar
+    private float attackDelayTimer = 0f;                            // Temporizador interno
+    private bool playerDetected = false;                            // Si el jugador está dentro del rango
 
     [Header("Referencias")]
     private Rigidbody rb;                                           // Referencia al Rigidbody
@@ -55,6 +60,8 @@ public class JefeController : MonoBehaviour
     [SerializeField] private GameObject smoke;                      // Prefab de la explosión al recibir daño
     [SerializeField] private GameObject[] coheteParticles;          // Partículas de los cohetes
     [SerializeField] private BossHealthBar bossHealthBar;           // Referencia a la barra de vida del jefe
+    [SerializeField] private InventarioMotor inventarioMotor;       // referencia al inventario del motor
+    [SerializeField] private Transform jugador;                     // referencia al jugador
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -77,13 +84,45 @@ public class JefeController : MonoBehaviour
     {
         if (bossHealthBar != null)
             bossHealthBar.SetHealth(currentHealth, maxHealth);
+
+        // Calcular distancia al jugador
+        float distancia = Vector3.Distance(transform.position, jugador.position);
+
+        if (distancia <= detectionRange/3)
+        {
+           if (Input.GetKey(KeyCode.E))
+            {
+                if (currentHealth == 0)
+                {
+                    Transform jefeC = transform.Find("JefeC");
+                    if (jefeC != null)
+                    {
+                        Transform centro = jefeC.Find("Centro");
+                        if (centro != null)
+                            Destroy(centro.gameObject);
+
+                        // Accedemos al componente del jugador que gestiona mel motor
+                        PlayerController player = jugador.GetComponent<PlayerController>();
+                        if (player != null)
+                        {
+                            player.AddMotor(true);
+                            inventarioMotor.SetMotor();
+                        }
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
     }
 
     private void FixedUpdate()
     {
         AlignToPlanetSurface();
 
-        // Control del cooldown al recibir daño
+        // Cooldown de daño
         if (cooldownActive && !playerOnTop)
         {
             cooldownTimer -= Time.fixedDeltaTime;
@@ -94,28 +133,52 @@ public class JefeController : MonoBehaviour
             }
         }
 
-        // Si está en cooldown, el jefe no hace nada más
+        // Si está en cooldown, no hace nada más
         if (cooldownActive)
             return;
 
+        float distance = Vector3.Distance(transform.position, player.position);
 
         if (player != null && currentHealth > 0)
         {
-            float distance = Vector3.Distance(transform.position, player.position);
-
+            // Si el jugador está dentro del rango
             if (distance <= detectionRange)
             {
+                if (!playerDetected)
+                {
+                    // El jugador acaba de entrar en rango
+                    playerDetected = true;
+                    attackDelayTimer = attackDelay;
+                }
+
+                // Esperar antes de atacar
+                if (attackDelayTimer > 0f)
+                {
+                    attackDelayTimer -= Time.fixedDeltaTime;
+                    return; // No ataca todavía
+                }
+
+                // Una vez pasado el delay, puede atacar
                 if (bossHealthBar != null)
                     bossHealthBar.SetVisible(true);
 
                 rb.constraints = RigidbodyConstraints.None;
                 Atack();
+                ActivarTodosLosMuros();
             }
             else
             {
+                // El jugador salió del rango reiniciar el delay
+                if (playerDetected)
+                {
+                    playerDetected = false;
+                    attackDelayTimer = 0f;
+                }
+
                 ResetToInitialState();
                 if (bossHealthBar != null)
                     bossHealthBar.SetVisible(false);
+                DesactivarTodosLosMuros();
                 rb.constraints = RigidbodyConstraints.FreezeAll;
             }
         }
@@ -128,6 +191,7 @@ public class JefeController : MonoBehaviour
                 brazosDie = true;
             }
             rb.constraints = RigidbodyConstraints.FreezeAll;
+            DesactivarTodosLosMuros();
         }
 
         if (fireCooldown > 0f)
@@ -285,23 +349,6 @@ public class JefeController : MonoBehaviour
                 // Reiniciar al estado inicial
                 ResetToInitialState();
             }
-            else if (canTakeDamageFromTop && currentHealth == 0)
-            {
-                Transform jefeC = transform.Find("JefeC");
-                if (jefeC != null)
-                {
-                    Transform centro = jefeC.Find("Centro");
-                    if (centro != null)
-                        Destroy(centro.gameObject);
-
-                    // Accedemos al componente del jugador que gestiona mel motor
-                    PlayerController player = collision.gameObject.GetComponent<PlayerController>();
-                    if (player != null)
-                    {
-                        player.AddMotor(true);
-                    }
-                }
-            }
         }
     }
 
@@ -316,7 +363,10 @@ public class JefeController : MonoBehaviour
     private void TakeDamage(int amount)
     {
         currentHealth -= amount;
-        
+
+        float factorAumento = 1.75f;
+        fireRate *= factorAumento;
+
         if (currentHealth <= 0)
         {
             Die();
@@ -383,5 +433,19 @@ public class JefeController : MonoBehaviour
             if (psObj != null)
                 psObj.SetActive(false);
         }
+    }
+
+    private void ActivarTodosLosMuros()
+    {
+        MuroMovil[] muros = FindObjectsByType<MuroMovil>(FindObjectsSortMode.None);
+        foreach (MuroMovil muro in muros)
+            muro.ActivarMovimiento();
+    }
+
+    private void DesactivarTodosLosMuros()
+    {
+        MuroMovil[] muros = FindObjectsByType<MuroMovil>(FindObjectsSortMode.None);
+        foreach (MuroMovil muro in muros)
+            muro.DesactivarMovimiento();
     }
 }

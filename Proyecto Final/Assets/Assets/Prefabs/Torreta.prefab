@@ -147,5 +147,5 @@ MonoBehaviour:
   detectionRange: 15
   fireRate: 1
   bulletPrefab: {fileID: 4591253490305078694, guid: 0993d6f8395bcfa49879bdc026e24c53, type: 3}
-  explosion: {fileID: 318548065960394719, guid: ad01a94bcb278284cb87870a5e49ec0c, type: 3}
+  explosion: {fileID: 5848946600571364572, guid: ad01a94bcb278284cb87870a5e49ec0c, type: 3}
   chatarra: {fileID: 4755669193452121381, guid: 00d480769869b2640853c8f7ff6f7748, type: 3}

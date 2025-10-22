@@ -11,8 +11,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform cameraTransform;             // la cámara principal o Cinemachine FreeLook
     [SerializeField] private HealthBar healthBar;                   // referencia a la barra de vida
     [SerializeField] private StaminaBar staminaBar;                 // referencia a la barra de stamina
-    [SerializeField] private ChatarraController chatarraController;                   // referencia a la barra de vida
+    [SerializeField] private ChatarraController chatarraController; // referencia a la barra de vida
     [SerializeField] private Animator animator;                     // referencia al animator
+    [SerializeField] private GameObject[] coheteParticles;          // Partículas de los cohetes
 
     [Header("Movimiento")]
     [SerializeField] private float speedMovement = 5f;              // velocidad de movimiento
@@ -148,6 +149,7 @@ public class PlayerController : MonoBehaviour
         // Reset al tocar el suelo
         if (inFloor)
         {
+            DesactivarCohetes();
             isJumping = false;
             canDoubleJump = doubleJumpUnlocked;
             jetpackActive = false;
@@ -179,11 +181,13 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Space) && isJumping && !inFloor && jetpack)
         {
+            ActivarCohetes();
             animator.SetBool("Jetpack", true);
             jetpackActive = true;
         }
         else if (Input.GetKeyUp(KeyCode.Space) && isJumping && !inFloor && jetpack)
         {
+            DesactivarCohetes();
             jetpackActive = false;
             animator.SetBool("Jumping2", false);
             animator.SetBool("Jetpack", false);
@@ -291,9 +295,27 @@ public class PlayerController : MonoBehaviour
     {
         totalMateriales += cantidad;
     }
-    
+
     public void AddMotor(bool valor)
     {
         Motor = valor;
+    }
+    
+    private void ActivarCohetes()
+    {
+        foreach (GameObject psObj in coheteParticles)
+        {
+            if (psObj != null)
+                psObj.SetActive(true);
+        }
+    }
+
+    private void DesactivarCohetes()
+    {
+        foreach (GameObject psObj in coheteParticles)
+        {
+            if (psObj != null)
+                psObj.SetActive(false);
+        }
     }
 }

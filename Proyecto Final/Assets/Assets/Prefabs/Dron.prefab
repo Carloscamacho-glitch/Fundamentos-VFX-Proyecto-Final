@@ -104,7 +104,7 @@ MonoBehaviour:
   closeRange: 2
   closeDuration: 1.5
   retreatDuration: 0.5
-  explosion: {fileID: 318548065960394719, guid: ad01a94bcb278284cb87870a5e49ec0c, type: 3}
+  explosion: {fileID: 5848946600571364572, guid: ad01a94bcb278284cb87870a5e49ec0c, type: 3}
   chatarra: {fileID: 4755669193452121381, guid: 00d480769869b2640853c8f7ff6f7748, type: 3}
 --- !u!1001 &7305697884599527291
 PrefabInstance:

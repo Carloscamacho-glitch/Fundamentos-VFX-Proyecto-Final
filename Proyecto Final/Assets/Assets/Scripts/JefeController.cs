@@ -62,6 +62,7 @@ public class JefeController : MonoBehaviour
     [SerializeField] private BossHealthBar bossHealthBar;           // Referencia a la barra de vida del jefe
     [SerializeField] private InventarioMotor inventarioMotor;       // referencia al inventario del motor
     [SerializeField] private Transform jugador;                     // referencia al jugador
+    [SerializeField] private ParticleSystem explosionDie;           // Sistema de partículas
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -176,14 +177,17 @@ public class JefeController : MonoBehaviour
                 }
 
                 ResetToInitialState();
-                if (bossHealthBar != null)
-                    bossHealthBar.SetVisible(false);
+                // Activa partículas
                 DesactivarTodosLosMuros();
                 rb.constraints = RigidbodyConstraints.FreezeAll;
             }
         }
         else
         {
+            if (explosionDie != null)
+                    explosionDie.gameObject.SetActive(true);
+            if (bossHealthBar != null)
+                bossHealthBar.SetVisible(false);
             if (!brazosDie)
             {
                 GirarYMoverBrazos();
@@ -341,9 +345,21 @@ public class JefeController : MonoBehaviour
                 // Instanciar explosión y hacerla hija del jefe
                 if (smoke != null)
                 {
-                    Vector3 spawnPos = transform.position + Vector3.up * 4f;
-                    GameObject smokeI = Instantiate(smoke, spawnPos, Quaternion.identity);
-                    smokeI.transform.SetParent(transform);
+                    Vector3 spawnPos = transform.position + planetUp * 4f;
+
+                    // Añadimos un desplazamiento aleatorio en los ejes X y Z locales del jefe
+                    float randomX = Random.Range(-1f, 1f);
+                    float randomZ = Random.Range(-1f, 1f);
+                    Vector3 offset = transform.right * randomX + transform.forward * randomZ;
+
+                    // Aplicamos el desplazamiento aleatorio
+                    spawnPos += offset;
+
+                    // Instanciamos el humo
+                    GameObject smokeI = Instantiate(smoke, spawnPos, Quaternion.identity, transform);
+
+                    // Hacemos que el eje Z del humo apunte en la misma dirección que el eje Y del jefe
+                    smokeI.transform.rotation = Quaternion.LookRotation(transform.up, transform.forward);
                 }
 
                 // Reiniciar al estado inicial

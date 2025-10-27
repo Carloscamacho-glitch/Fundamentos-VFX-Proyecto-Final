@@ -293,6 +293,9 @@ public class PlayerController : MonoBehaviour
             transform.position = spawnPoint.position;
             transform.rotation = spawnPoint.rotation;
         }
+
+        // Penalización de chatarra al morir
+        totalChatarra = Mathf.Max(0, totalChatarra - Random.Range(5, 15));
     }
 
     public void AddChatarra(int cantidad)

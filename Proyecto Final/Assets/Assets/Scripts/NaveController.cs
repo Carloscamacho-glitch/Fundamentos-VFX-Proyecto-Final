@@ -6,13 +6,19 @@ public class NaveController : MonoBehaviour
     [SerializeField] private GameObject naveRota; // Nave dañada
     [SerializeField] private GameObject nave;     // Nave reparada
     [SerializeField] private float rangoDeteccion; // Distancia para activar reparación
-    private bool naverReparada = false;
+    [SerializeField] private float delayCambioNave = 3f;           // Retraso antes de cambiar la nave
+    [SerializeField] private bool naveReparada = false;                             // Estado de la nave
+    [SerializeField] private bool reparacionEnProgreso = false;                     // Controla el delay
+    [SerializeField] private float temporizadorReparacion = 0f;                     
 
     [SerializeField] private Transform jugador;
 
     [SerializeField] private AlertaMateriales alertaMateriales;
     [SerializeField] private AlertaNaveReparada alertaNaveReparada;
     [SerializeField] private float avisoTimer = 0f;
+
+    [Header("Efectos")]
+    [SerializeField] private ParticleSystem polvoReparacion; // Sistema de partículas
 
     void Update()
     {
@@ -28,19 +34,29 @@ public class NaveController : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.E))
             {
-                if (player.TieneMotor() && player.GetMateriales() >= 2 && !naverReparada)
+                if (player.TieneMotor() && player.GetMateriales() >= 2 && !naveReparada)
                 {
-                    RepararNave();
-                    naverReparada = true;
-                    MostrarAvisoNaveReparada();
+                    IniciarReparacion();
                 }
-                else if (naverReparada)
+                else if (naveReparada)
                 {
                     return;
                 }
                 else
                 {
                     MostrarAvisoFaltanMateriales();
+                }
+            }
+            
+            // Si la reparación está en proceso, cuenta el tiempo
+            if (reparacionEnProgreso)
+            {
+                temporizadorReparacion += Time.deltaTime;
+
+                // Después de 1 segundo cambia la nave
+                if (temporizadorReparacion >= delayCambioNave)
+                {
+                    FinalizarReparacion();
                 }
             }
         }
@@ -56,12 +72,30 @@ public class NaveController : MonoBehaviour
         }
     }
 
-    private void RepararNave()
+    // === MÉTODOS DE REPARACIÓN ===
+    private void IniciarReparacion()
     {
-        naveRota.SetActive(false);
-        nave.SetActive(true);
+        reparacionEnProgreso = true;
+        temporizadorReparacion = 0f;
+
+        // Activa partículas
+        if (polvoReparacion != null)
+            polvoReparacion.gameObject.SetActive(true);
     }
 
+    private void FinalizarReparacion()
+    {
+        reparacionEnProgreso = false;
+        naveReparada = true;
+
+        // Cambia los modelos
+        naveRota.SetActive(false);
+        nave.SetActive(true);
+
+        // Muestra aviso
+        MostrarAvisoNaveReparada();
+    }
+    
     private void MostrarAvisoNaveReparada()
     {
         if (alertaNaveReparada != null)

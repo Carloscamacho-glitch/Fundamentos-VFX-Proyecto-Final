@@ -437,6 +437,7 @@
 "Assets/Assets/Scripts/DronController.cs"
 "Assets/Assets/Scripts/FallingPlatform.cs"
 "Assets/Assets/Scripts/Gravity.cs"
+"Assets/Assets/Scripts/IslaDesapareceController.cs"
 "Assets/Assets/Scripts/JefeController.cs"
 "Assets/Assets/Scripts/Laminas.cs"
 "Assets/Assets/Scripts/Menu_UI/AlertaMateriales.cs"

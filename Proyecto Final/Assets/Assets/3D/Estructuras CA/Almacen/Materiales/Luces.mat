@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Luces
-  m_Shader: {fileID: 4800000, guid: 0e9d5a909a1f7e84882a534d0d11e49f, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: bb288413ba371cc42b4efc57e7a35a0f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -86,10 +86,12 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _GlowStrength: 5
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _PulseSpeed: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SmoothnessTextureChannel: 0
@@ -105,7 +107,8 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0.90659666, g: 0.7870669, b: 0.31089526, a: 1}
-    - _EmissionColor: {r: 3.9955325, g: 2.9203901, b: 0.39093482, a: 5}
+    - _EmissionColor: {r: 1, g: 0.7747623, b: 0, a: 5}
+    - _NeonColor: {r: 1, g: 0.9962076, b: 0.3254717, a: 0}
     - _UvOffset: {r: 0, g: 0, b: 0, a: 0}
     - _UvTiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []

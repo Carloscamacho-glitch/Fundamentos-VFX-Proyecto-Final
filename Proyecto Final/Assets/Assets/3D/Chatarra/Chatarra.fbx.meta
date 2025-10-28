@@ -3,7 +3,12 @@ guid: afaa354f8a148824ebc774995357d890
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Chatarra
+    second: {fileID: 2100000, guid: 09ce13c98eba4f447b12a49bfc9e8d7d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

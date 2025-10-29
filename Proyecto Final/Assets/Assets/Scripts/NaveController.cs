@@ -6,7 +6,7 @@ public class NaveController : MonoBehaviour
     [SerializeField] private GameObject naveRota; // Nave dañada
     [SerializeField] private GameObject nave;     // Nave reparada
     [SerializeField] private float rangoDeteccion; // Distancia para activar reparación
-    [SerializeField] private float delayCambioNave = 3f;           // Retraso antes de cambiar la nave
+    [SerializeField] private float delayCambioNave = 1.5f;           // Retraso antes de cambiar la nave
     [SerializeField] private bool naveReparada = false;                             // Estado de la nave
     [SerializeField] private bool reparacionEnProgreso = false;                     // Controla el delay
     [SerializeField] private float temporizadorReparacion = 0f;                     

@@ -6,69 +6,98 @@ public class NaveController : MonoBehaviour
     [SerializeField] private GameObject naveRota; // Nave dañada
     [SerializeField] private GameObject nave;     // Nave reparada
     [SerializeField] private float rangoDeteccion; // Distancia para activar reparación
-    [SerializeField] private float delayCambioNave = 1.5f;           // Retraso antes de cambiar la nave
-    [SerializeField] private bool naveReparada = false;                             // Estado de la nave
-    [SerializeField] private bool reparacionEnProgreso = false;                     // Controla el delay
-    [SerializeField] private float temporizadorReparacion = 0f;                     
+    [SerializeField] private float delayCambioNave = 1.5f; // Retraso antes de cambiar la nave
+    [SerializeField] private bool naveReparada = false;    
+    [SerializeField] private bool reparacionEnProgreso = false; 
+    [SerializeField] private float temporizadorReparacion = 0f;
 
     [SerializeField] private Transform jugador;
 
     [SerializeField] private AlertaMateriales alertaMateriales;
     [SerializeField] private AlertaNaveReparada alertaNaveReparada;
+    [SerializeField] private AlertaInteraccionNave alertaInteraccionNave;
+    [SerializeField] private AlertaInteraccionNaveFinJuego alertaInteraccionNaveFinJuego;
+    [SerializeField] private MenuController menuController;
     [SerializeField] private float avisoTimer = 0f;
 
     [Header("Efectos")]
-    [SerializeField] private ParticleSystem polvoReparacion; // Sistema de partículas
+    [SerializeField] private ParticleSystem polvoReparacion;
+
+    private bool jugadorEnRango = false;     // Detecta si el jugador está dentro del rango
+    private bool avisoInteraccionMostrado = false; // Evita mostrar varias veces el aviso
+    private bool avisoInteraccionFinJuegoMostrado = false; // Evita mostrar varias veces el aviso
 
     void Update()
     {
         if (jugador == null) return;
 
         PlayerController player = jugador.GetComponent<PlayerController>();
-
-        // Calcular distancia al jugador
         float distancia = Vector3.Distance(transform.position, jugador.position);
 
-        // Si está dentro del rango de detección
+        // --- Detección del jugador en rango ---
         if (distancia <= rangoDeteccion)
         {
+            jugadorEnRango = true;
+
+            // Mostrar aviso de interacción solo una vez al entrar en rango
+            if (!naveReparada && !avisoInteraccionMostrado)
+            {
+                MostrarAvisoInteraccionNave();
+                avisoInteraccionMostrado = true;
+            }
+            else if (naveReparada && !avisoInteraccionFinJuegoMostrado)
+            {
+                OcultarAvisoInteraccionNave();
+                MostrarAvisoInteraccionNaveFinJuego();
+                avisoInteraccionFinJuegoMostrado = true;
+            }
+
+            // Permitir reparación
             if (Input.GetKey(KeyCode.E))
             {
                 if (player.TieneMotor() && player.GetMateriales() >= 2 && !naveReparada)
                 {
                     IniciarReparacion();
                 }
-                else if (naveReparada)
-                {
-                    return;
-                }
-                else
+                else if (!naveReparada)
                 {
                     MostrarAvisoFaltanMateriales();
                 }
+                else if (naveReparada)
+                {
+                    menuController.Creditos();
+                }
             }
-            
-            // Si la reparación está en proceso, cuenta el tiempo
+
             if (reparacionEnProgreso)
             {
                 temporizadorReparacion += Time.deltaTime;
-
-                // Después de 1 segundo cambia la nave
                 if (temporizadorReparacion >= delayCambioNave)
-                {
                     FinalizarReparacion();
-                }
             }
         }
-        
-        // Ocultar el aviso tras un tiempo
+        else
+        {
+            jugadorEnRango = false;
+            avisoInteraccionMostrado = false; // Permite mostrar el aviso nuevamente si el jugador se aleja y regresa
+            avisoInteraccionFinJuegoMostrado = false;
+        }
+
+        // Ocultar avisos tras su tiempo
         if (avisoTimer > 0)
         {
             avisoTimer -= Time.deltaTime;
-            if (avisoTimer <= 0 && alertaMateriales != null)
-                alertaMateriales.MostrarAvisoFaltanMateriales(false);
-            if (avisoTimer <= 0 && alertaNaveReparada != null)
-                alertaNaveReparada.MostrarAvisoNaveReparada(false);
+            if (avisoTimer <= 0)
+            {
+                if (alertaMateriales != null)
+                    alertaMateriales.MostrarAvisoFaltanMateriales(false);
+                if (alertaNaveReparada != null)
+                    alertaNaveReparada.MostrarAvisoNaveReparada(false);
+                if (alertaInteraccionNave != null)
+                    alertaInteraccionNave.MostrarAvisodeInteraccionNave(false);
+                if (alertaInteraccionNaveFinJuego != null)
+                    alertaInteraccionNaveFinJuego.MostrarAvisodeInteraccionNaveFinJuego(false);
+            }
         }
     }
 
@@ -78,7 +107,6 @@ public class NaveController : MonoBehaviour
         reparacionEnProgreso = true;
         temporizadorReparacion = 0f;
 
-        // Activa partículas
         if (polvoReparacion != null)
             polvoReparacion.gameObject.SetActive(true);
     }
@@ -88,20 +116,19 @@ public class NaveController : MonoBehaviour
         reparacionEnProgreso = false;
         naveReparada = true;
 
-        // Cambia los modelos
         naveRota.SetActive(false);
         nave.SetActive(true);
 
-        // Muestra aviso
         MostrarAvisoNaveReparada();
     }
-    
+
+    // === MÉTODOS DE ALERTA ===
     private void MostrarAvisoNaveReparada()
     {
         if (alertaNaveReparada != null)
         {
             alertaNaveReparada.MostrarAvisoNaveReparada(true);
-            avisoTimer = 3f; // se mostrará durante 3 segundos
+            avisoTimer = 3f;
         }
     }
 
@@ -110,7 +137,34 @@ public class NaveController : MonoBehaviour
         if (alertaMateriales != null)
         {
             alertaMateriales.MostrarAvisoFaltanMateriales(true);
-            avisoTimer = 3f; // se mostrará durante 3 segundos
+            avisoTimer = 3f;
+        }
+    }
+
+    private void MostrarAvisoInteraccionNave()
+    {
+        if (alertaInteraccionNave != null)
+        {
+            alertaInteraccionNave.MostrarAvisodeInteraccionNave(true); // Usa el mismo método para mostrar
+            avisoTimer = 3f; // Duración del aviso
+        }
+    }
+
+    private void OcultarAvisoInteraccionNave()
+    {
+        if (alertaInteraccionNave != null)
+        {
+            alertaInteraccionNave.MostrarAvisodeInteraccionNave(false); // Usa el mismo método para mostrar
+            avisoTimer = 3f; // Duración del aviso
+        }
+    }
+
+    private void MostrarAvisoInteraccionNaveFinJuego()
+    {
+        if (alertaInteraccionNaveFinJuego != null)
+        {
+            alertaInteraccionNaveFinJuego.MostrarAvisodeInteraccionNaveFinJuego(true); // Usa el mismo método para mostrar
+            avisoTimer = 3f; // Duración del aviso
         }
     }
 }

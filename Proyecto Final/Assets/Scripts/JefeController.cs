@@ -63,6 +63,10 @@ public class JefeController : MonoBehaviour
     [SerializeField] private InventarioMotor inventarioMotor;       // referencia al inventario del motor
     [SerializeField] private Transform jugador;                     // referencia al jugador
     [SerializeField] private ParticleSystem explosionDie;           // Sistema de partículas
+    [SerializeField] private AlertaInteraccionJefe alertaInteraccionJefe;
+    [SerializeField] private float avisoTimer = 0f;
+    private bool avisoInteraccionMostrado = false;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -89,9 +93,24 @@ public class JefeController : MonoBehaviour
         // Calcular distancia al jugador
         float distancia = Vector3.Distance(transform.position, jugador.position);
 
-        if (distancia <= detectionRange/3)
+        if (distancia <= detectionRange / 3)
         {
-           if (Input.GetKey(KeyCode.E))
+            // Mostrar aviso de interacción solo una vez al entrar en rango
+            if (currentHealth == 0 && !avisoInteraccionMostrado)
+            {
+                Transform jefeC = transform.Find("JefeC");
+                if (jefeC != null)
+                {
+                    Transform centro = jefeC.Find("Centro");
+                    if (centro != null)
+                    {
+                        MostrarAvisoInteraccionJefe();
+                        avisoInteraccionMostrado = true;
+                    }
+                }
+            }
+
+            if (Input.GetKey(KeyCode.E))
             {
                 if (currentHealth == 0)
                 {
@@ -115,6 +134,21 @@ public class JefeController : MonoBehaviour
                 {
                     return;
                 }
+            }
+        }
+        else
+        {
+            avisoInteraccionMostrado = false;
+        }
+        
+        // Ocultar avisos tras su tiempo
+        if (avisoTimer > 0)
+        {
+            avisoTimer -= Time.deltaTime;
+            if (avisoTimer <= 0)
+            {
+                if (alertaInteraccionJefe != null)
+                    alertaInteraccionJefe.MostrarAvisodeInteraccionJefe(false);
             }
         }
     }
@@ -463,5 +497,14 @@ public class JefeController : MonoBehaviour
         MuroMovil[] muros = FindObjectsByType<MuroMovil>(FindObjectsSortMode.None);
         foreach (MuroMovil muro in muros)
             muro.DesactivarMovimiento();
+    }
+
+    private void MostrarAvisoInteraccionJefe()
+    {
+        if (alertaInteraccionJefe != null)
+        {
+            alertaInteraccionJefe.MostrarAvisodeInteraccionJefe(true); // Usa el mismo método para mostrar
+            avisoTimer = 3f; // Duración del aviso
+        }
     }
 }

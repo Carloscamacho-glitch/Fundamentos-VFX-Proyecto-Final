@@ -3,11 +3,11 @@ using UnityEngine;
 public class OrbitaSol : MonoBehaviour
 {
     [Header("Configuración del Sol")]
-    public Transform planetCenter;   // centro del planeta
-    public float orbitRadius = 1000f; // distancia desde el planeta
-    public float dayDuration = 120f;  // duración del ciclo día-noche (segundos)
-    public Gradient lightColor;       // colores del amanecer, día, noche
-    public AnimationCurve lightIntensity; // curva de intensidad
+    [SerializeField] private Transform planetCenter;   // centro del planeta
+    [SerializeField] private float orbitRadius = 1000f; // distancia desde el planeta
+    [SerializeField] private float dayDuration = 120f;  // duración del ciclo día-noche (segundos)
+    [SerializeField] private Gradient lightColor;       // colores del amanecer, día, noche
+    [SerializeField] private AnimationCurve lightIntensity; // curva de intensidad
 
     private float time;
 

@@ -7,8 +7,8 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioClip[] clips;         // Lista de clips de audio
 
     [Header("Opciones de reproducción")]
-    [SerializeField] private bool playOnStart = true;   // Reproducir automáticamente al iniciar
-    [SerializeField] private bool avoidRepeat = true;   // Evitar repetir el mismo clip consecutivo
+    private bool playOnStart = true;   // Reproducir automáticamente al iniciar
+    private bool avoidRepeat = true;   // Evitar repetir el mismo clip consecutivo
 
     [Header("Tiempo entre pistas")]
     [SerializeField] private float tiempoMinimo = 30f;   // Mínimo tiempo de espera entre clips
@@ -26,7 +26,7 @@ public class AudioController : MonoBehaviour
 
         initialized = audioSource != null && clips != null && clips.Length > 0;
         if (!initialized)
-            Debug.LogWarning("PlayThenRandom: falta AudioSource o no hay clips asignados.");
+            Debug.LogWarning("Falta AudioSource o no hay clips asignados.");
     }
 
     private void Start()

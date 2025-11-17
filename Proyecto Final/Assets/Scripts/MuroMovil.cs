@@ -4,12 +4,12 @@ public class MuroMovil : MonoBehaviour
 {
     [Header("Movimiento del muro")]
     [SerializeField] private float distanciaMovimiento = 20f;  // Distancia que se moverá sobre su eje Z local
-    [SerializeField] private float velocidad = 5f;             // Velocidad del movimiento
+    [SerializeField] private float velocidad = 10f;             // Velocidad del movimiento
 
-    private Vector3 posicionInicial;
-    private Vector3 posicionFinal;
-    [SerializeField] private bool subiendo = false;
-    [SerializeField] private bool bajando = false;
+    private Vector3 posicionInicial;                                // Posición inicial del muro
+    private Vector3 posicionFinal;                                  // Posición final del muro
+    private bool subiendo = false;                 // Estado de movimiento
+    private bool bajando = false;                  // Estado de movimiento
 
     void Start()
     {

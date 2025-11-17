@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Cohetes : MonoBehaviour
 {
-    [SerializeField] private float rotationSpeed = 90f;
+    private float rotationSpeed = 90f;
     [SerializeField] private InventarioCohete inventarioCohete;
 
     private void Update()

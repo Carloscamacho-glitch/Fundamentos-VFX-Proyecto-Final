@@ -126,4 +126,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationSpeed: 90
-  cooldownTiempo: 1
+  cooldownTiempo: 0.5

@@ -5,11 +5,11 @@ public class NaveController : MonoBehaviour
     [Header("Referencias de Objetos")]
     [SerializeField] private GameObject naveRota; // Nave dañada
     [SerializeField] private GameObject nave;     // Nave reparada
-    [SerializeField] private float rangoDeteccion; // Distancia para activar reparación
-    [SerializeField] private float delayCambioNave = 1.5f; // Retraso antes de cambiar la nave
-    [SerializeField] private bool naveReparada = false;    
-    [SerializeField] private bool reparacionEnProgreso = false; 
-    [SerializeField] private float temporizadorReparacion = 0f;
+    [SerializeField] private float rangoDeteccion = 10f; // Distancia para activar reparación
+    [SerializeField] private float delayCambioNave = 1f; // Retraso antes de cambiar la nave
+    private bool naveReparada = false;    
+    private bool reparacionEnProgreso = false; 
+    private float temporizadorReparacion = 0f;
 
     [SerializeField] private Transform jugador;
 
@@ -17,8 +17,7 @@ public class NaveController : MonoBehaviour
     [SerializeField] private AlertaNaveReparada alertaNaveReparada;
     [SerializeField] private AlertaInteraccionNave alertaInteraccionNave;
     [SerializeField] private AlertaInteraccionNaveFinJuego alertaInteraccionNaveFinJuego;
-    [SerializeField] private MenuController menuController;
-    [SerializeField] private float avisoTimer = 0f;
+    [SerializeField] private MenuController menuController;private float avisoTimer = 0f;
 
     [Header("Efectos")]
     [SerializeField] private ParticleSystem polvoReparacion;

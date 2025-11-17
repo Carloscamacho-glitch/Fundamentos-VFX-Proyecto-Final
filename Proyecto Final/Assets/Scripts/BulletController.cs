@@ -6,7 +6,7 @@ public class BulletController : MonoBehaviour
     [SerializeField] private float baseHeight = 1f;                     // Altura base sobre el suelo
     [SerializeField] private float maxRaycastDistance = 10f;            // Distancia máxima del raycast hacia el suelo
     [SerializeField] private float lifeTime = 5f;                       // Tiempo total de la bala
-    [SerializeField] private float minHeight = 0.1f;                    // Altura mínima al final del lifetime
+    [SerializeField] private float minHeight = -0.5f;                    // Altura mínima al final del lifetime
     private Rigidbody rb;                                               // Referencia al Rigidbody
     private Vector3 lastMoveDirection = Vector3.forward;                // Última dirección de movimiento
     private Quaternion initialRotation;                                 // Rotación inicial de la bala

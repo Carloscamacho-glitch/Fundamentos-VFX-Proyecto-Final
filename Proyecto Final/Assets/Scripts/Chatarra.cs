@@ -3,7 +3,7 @@ using UnityEngine;
 public class Chatarra : MonoBehaviour
 {
     [SerializeField] private float rotationSpeed = 90f; // velocidad de rotación
-    [SerializeField] private float cooldownTiempo; // tiempo de espera antes de poder recoger
+    [SerializeField] private float cooldownTiempo = 0.5f; // tiempo de espera antes de poder recoger
     private bool puedeRecogerse = false; // controla si puede ser recogida
 
     private void Start()

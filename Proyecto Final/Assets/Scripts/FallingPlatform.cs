@@ -12,7 +12,7 @@ public class FallingPlatform : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true; // Para que al inicio no caiga
+        rb.isKinematic = true;  // Para que al inicio no caiga
     }
 
     void OnCollisionEnter(Collision collision)

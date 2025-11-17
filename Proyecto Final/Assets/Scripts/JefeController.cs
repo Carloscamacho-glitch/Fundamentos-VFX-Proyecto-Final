@@ -5,20 +5,20 @@ public class JefeController : MonoBehaviour
     [Header("Vida")]
     [SerializeField] private int maxHealth = 3;                     // Cantidad máxima de vida
     [SerializeField] private int currentHealth;                     // Vida actual
-    [SerializeField] private bool canTakeDamageFromTop = true;      // puede recibir daño
-    [SerializeField] private bool playerOnTop = false;              // si el jugador está arriba
-    [SerializeField] private float damageCooldown = 3f;             // tiempo total de cooldown
-    [SerializeField] private float cooldownTimer = 0f;              // temporizador restante
-    [SerializeField] private bool cooldownActive = false;           // si el cooldown está corriendo
+    private bool canTakeDamageFromTop = true;      // puede recibir daño
+    private bool playerOnTop = false;              // si el jugador está arriba
+    private float damageCooldown = 3f;             // tiempo total de cooldown
+    private float cooldownTimer = 0f;              // temporizador restante
+    private bool cooldownActive = false;           // si el cooldown está corriendo
 
     [Header("Movimiento Circular")]
-    [SerializeField] private float circleRadius = 5f;               // Radio del círculo
-    [SerializeField] private float circleSpeed = 60f;               // Grados por segundo
-    [SerializeField] private float pivotHeightOffset = 0f;          // Offset vertical del punto pivote
-    [SerializeField] private float rotationSpeed = 5f;              // Velocidad de alineación con el suelo
-    [SerializeField] private int circleDirection = 1;               // 1 o -1 para dirección del círculo
-    [SerializeField] private Vector3 pivotPoint;                    // Punto alrededor del cual gira
-    [SerializeField] private float angle = 0f;                      // Ángulo actual en el círculo
+    [SerializeField] private float circleRadius = 10f;               // Radio del círculo
+    [SerializeField] private float circleSpeed = 50f;               // Grados por segundo
+    [SerializeField] private float pivotHeightOffset = 1f;          // Offset vertical del punto pivote
+    [SerializeField] private float rotationSpeed = 20f;              // Velocidad de alineación con el suelo
+    private int circleDirection = 1;               // 1 o -1 para dirección del círculo
+    private Vector3 pivotPoint;                    // Punto alrededor del cual gira
+    private float angle = 0f;                      // Ángulo actual en el círculo
     private bool isCircling = false;                                // Si se está en moviendo en círculo
     private float circlingTimer = 0f;                               // Temporizador para contar tiempo en movimiento
 
@@ -34,12 +34,12 @@ public class JefeController : MonoBehaviour
     [Header("Brazos y Cohetes")]
     [SerializeField] private Transform brazoIzquierdo;              // Transform del brazo izquierdo
     [SerializeField] private Transform brazoDerecho;                // Transform del brazo derecho
-    [SerializeField] private float brazoOffset = 2f;                // Offset para abrir los brazos
+    [SerializeField] private float brazoOffset = 0.8f;                // Offset para abrir los brazos
     private bool brazosMovidos = false;                             // Si los brazos ya están abiertos
     [SerializeField] private Transform CoheteIzquierdo;             // Transform del Cohete izquierdo
     [SerializeField] private Transform CoheteDerecho;               // Transform del Cohete derecho
-    [SerializeField] private float CohetesOffset = 0.7f;            // Offset para abrir las Cohetes
-    [SerializeField] private float CohetesDescenso = 0.8f;          // Descenso al abrir las Cohetes
+    [SerializeField] private float CohetesOffset = 0.8f;            // Offset para abrir las Cohetes
+    [SerializeField] private float CohetesDescenso = 0.3f;          // Descenso al abrir las Cohetes
     private bool brazosDie = false;                                 // Si los brazos ya están en posición de muerte
 
     [Header("Disparo")]
@@ -63,9 +63,9 @@ public class JefeController : MonoBehaviour
     [SerializeField] private InventarioMotor inventarioMotor;       // referencia al inventario del motor
     [SerializeField] private Transform jugador;                     // referencia al jugador
     [SerializeField] private ParticleSystem explosionDie;           // Sistema de partículas
-    [SerializeField] private AlertaInteraccionJefe alertaInteraccionJefe;
-    [SerializeField] private float avisoTimer = 0f;
-    private bool avisoInteraccionMostrado = false;
+    [SerializeField] private AlertaInteraccionJefe alertaInteraccionJefe;       // Alerta de interacción con el jefe
+    [SerializeField] private float avisoTimer = 0f;             // Temporizador para el aviso
+    private bool avisoInteraccionMostrado = false;          // Evita mostrar varias veces el aviso
 
     private void Start()
     {

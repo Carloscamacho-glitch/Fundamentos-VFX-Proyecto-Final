@@ -297,10 +297,10 @@ ScriptsOnlyBuild:
     methodName: Resume
   - assembly: Assembly-CSharp
     fullTypeName: MenuController
-    methodName: PlayGame
+    methodName: QuitGame
   - assembly: Assembly-CSharp
     fullTypeName: MenuController
-    methodName: QuitGame
+    methodName: PlayGame
   - assembly: Unity.RenderPipelines.Core.Runtime
     fullTypeName: UnityEngine.Rendering.UI.DebugUIHandlerButton
     methodName: OnAction
@@ -2823,4 +2823,5 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
-  playerPath: "C:/Users/PCReboot/Documents/Fragmentos del Vac\xEDo/Proyecto Final.exe"
+  playerPath: "C:/Users/PCReboot/Downloads/PF VFX/Fragmentos del Vac\xEDo/Proyecto
+    Final.exe"

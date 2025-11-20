@@ -179,6 +179,9 @@ public class JefeController : MonoBehaviour
             // Si el jugador está dentro del rango
             if (distance <= detectionRange)
             {
+                if (bossHealthBar != null)
+                    bossHealthBar.SetVisible(true);
+                
                 if (!playerDetected)
                 {
                     // El jugador acaba de entrar en rango
@@ -194,15 +197,14 @@ public class JefeController : MonoBehaviour
                 }
 
                 // Una vez pasado el delay, puede atacar
-                if (bossHealthBar != null)
-                    bossHealthBar.SetVisible(true);
-
                 rb.constraints = RigidbodyConstraints.None;
                 Atack();
                 ActivarTodosLosMuros();
             }
             else
             {
+                if (bossHealthBar != null)
+                    bossHealthBar.SetVisible(false);
                 // El jugador salió del rango reiniciar el delay
                 if (playerDetected)
                 {
@@ -218,10 +220,10 @@ public class JefeController : MonoBehaviour
         }
         else
         {
+            if (bossHealthBar != null)
+                    bossHealthBar.SetVisible(false);
             if (explosionDie != null)
                     explosionDie.gameObject.SetActive(true);
-            if (bossHealthBar != null)
-                bossHealthBar.SetVisible(false);
             if (!brazosDie)
             {
                 GirarYMoverBrazos();
